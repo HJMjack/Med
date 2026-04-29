@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>뇌졸중 갭 분석기 — Stroke Gap Analyzer</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #232636;
+    --border: #2e3148;
+    --accent: #5b8af5;
+    --accent2: #7c5bf5;
+    --text: #e8eaf0;
+    --text-dim: #8b90a8;
+    --red: #f55b5b;
+    --orange: #f5a05b;
+    --green: #5bf598;
+    --yellow: #f5e05b;
+    --purple: #c05bf5;
+    --radius: 10px;
+    --font: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  header .logo {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  header h1 { font-size: 17px; font-weight: 600; }
+  header p { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+  .main { display: flex; flex: 1; overflow: hidden; height: calc(100vh - 65px); }
+
+  /* Sidebar */
+  .sidebar {
+    width: 300px; min-width: 300px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+  .sidebar-header {
+    padding: 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px; font-weight: 600; color: var(--text-dim);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .api-section {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .api-section label { font-size: 12px; color: var(--text-dim); display: block; margin-bottom: 6px; }
+  .api-input-wrap { display: flex; gap: 6px; }
+  .api-input {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 7px 10px;
+    font-size: 12px;
+    color: var(--text);
+    outline: none;
+    font-family: monospace;
+  }
+  .api-input:focus { border-color: var(--accent); }
+  .btn-sm {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 7px 10px;
+    font-size: 11px;
+    color: var(--text-dim);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .btn-sm:hover { border-color: var(--accent); color: var(--accent); }
+  .api-status { font-size: 11px; margin-top: 6px; }
+  .api-status.ok { color: var(--green); }
+  .api-status.err { color: var(--red); }
+
+  .history-list { flex: 1; overflow-y: auto; padding: 8px; }
+  .history-item {
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-bottom: 4px;
+    border: 1px solid transparent;
+    transition: all 0.15s;
+  }
+  .history-item:hover { background: var(--surface2); border-color: var(--border); }
+  .history-item.active { background: var(--surface2); border-color: var(--accent); }
+  .history-item .h-title { font-size: 13px; font-weight: 500; }
+  .history-item .h-time { font-size: 11px; color: var(--text-dim); margin-top: 3px; }
+  .history-item .h-preview {
+    font-size: 11px; color: var(--text-dim);
+    margin-top: 4px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .history-empty { padding: 20px 12px; font-size: 13px; color: var(--text-dim); text-align: center; }
+
+  /* Main Content */
+  .content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+  /* Input area */
+  .input-area {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .input-area label {
+    font-size: 12px; font-weight: 600; color: var(--text-dim);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    display: block; margin-bottom: 8px;
+  }
+  .scenario-input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    font-size: 14px;
+    color: var(--text);
+    resize: vertical;
+    min-height: 100px;
+    max-height: 200px;
+    outline: none;
+    font-family: var(--font);
+    line-height: 1.6;
+    transition: border-color 0.2s;
+  }
+  .scenario-input:focus { border-color: var(--accent); }
+  .scenario-input::placeholder { color: var(--text-dim); }
+  .input-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+  .char-count { font-size: 12px; color: var(--text-dim); }
+  .btn-analyze {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none;
+    border-radius: 8px;
+    padding: 9px 20px;
+    font-size: 14px; font-weight: 600;
+    color: white;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .btn-analyze:hover:not(:disabled) { opacity: 0.85; }
+  .btn-analyze:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* Output area */
+  .output-area { flex: 1; overflow-y: auto; padding: 24px; }
+  .output-placeholder {
+    text-align: center; padding: 60px 20px;
+    color: var(--text-dim);
+  }
+  .output-placeholder .icon { font-size: 48px; margin-bottom: 12px; }
+  .output-placeholder p { font-size: 15px; }
+  .output-placeholder small { font-size: 13px; margin-top: 6px; display: block; }
+
+  .analysis-block { max-width: 900px; }
+  .analysis-scenario {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    margin-bottom: 16px;
+  }
+  .analysis-scenario .label { font-size: 11px; color: var(--text-dim); margin-bottom: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; }
+  .analysis-scenario .text { font-size: 14px; line-height: 1.6; }
+
+  .analysis-output {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    line-height: 1.8;
+    font-size: 14px;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  /* Syntax highlighting for output */
+  .out-confirmed { color: var(--green); font-weight: 600; }
+  .out-immediate { color: var(--red); font-weight: 600; }
+  .out-important { color: var(--orange); font-weight: 600; }
+  .out-inpatient { color: var(--accent); font-weight: 600; }
+  .out-point { color: var(--purple); font-weight: 600; }
+  .out-heading { color: var(--yellow); font-weight: 700; }
+
+  .streaming-cursor {
+    display: inline-block;
+    width: 2px; height: 16px;
+    background: var(--accent);
+    vertical-align: text-bottom;
+    animation: blink 0.8s step-end infinite;
+    margin-left: 1px;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .status-bar {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; color: var(--text-dim);
+    margin-bottom: 10px;
+  }
+  .spinner {
+    width: 14px; height: 14px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .examples-row {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px;
+  }
+  .example-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 12px;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .example-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .section-divider {
+    font-size: 11px; font-weight: 700;
+    color: var(--text-dim);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    padding: 4px 0;
+    border-bottom: 1px solid var(--border);
+    margin: 10px 0 6px;
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🧠</div>
+  <div>
+    <h1>뇌졸중 갭 분석기</h1>
+    <p>임상 시나리오에서 누락된 평가 항목 자동 분석 — v3.0 알고리듬 기반</p>
+  </div>
+</header>
+
+<div class="main">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-header">API 설정</div>
+    <div class="api-section">
+      <label>Anthropic API Key</label>
+      <div class="api-input-wrap">
+        <input type="password" class="api-input" id="apiKey" placeholder="sk-ant-..." />
+        <button class="btn-sm" onclick="toggleApiKey()">보기</button>
+      </div>
+      <div class="api-status" id="apiStatus"></div>
+    </div>
+
+    <div class="sidebar-header" style="padding-top:14px">분석 기록</div>
+    <div class="history-list" id="historyList">
+      <div class="history-empty">분석 결과가 여기에 표시됩니다</div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+    <div class="input-area">
+      <label>임상 시나리오 입력</label>
+      <textarea class="scenario-input" id="scenarioInput"
+        placeholder="예시: 62세 여자. 3시간 전 갑자기 발생한 실어증과 우측 편마비. 내원 당시 혈압 185/110, 맥박 88회/분 불규칙."></textarea>
+      <div class="examples-row" id="examplesRow">
+        <span style="font-size:11px;color:var(--text-dim);align-self:center">예시:</span>
+        <button class="example-btn" onclick="loadExample(0)">62세 여자 실어증</button>
+        <button class="example-btn" onclick="loadExample(1)">75세 남자 어지럼증</button>
+        <button class="example-btn" onclick="loadExample(2)">45세 여자 wake-up</button>
+        <button class="example-btn" onclick="loadExample(3)">68세 남자 EVT 후</button>
+      </div>
+      <div class="input-footer">
+        <span class="char-count" id="charCount">0자</span>
+        <button class="btn-analyze" id="analyzeBtn" onclick="analyze()">
+          <span id="btnIcon">⚡</span>
+          <span id="btnText">갭 분석 시작</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="output-area" id="outputArea">
+      <div class="output-placeholder">
+        <div class="icon">🔍</div>
+        <p>시나리오를 입력하고 분석을 시작하세요</p>
+        <small>API Key를 입력 후 임상 시나리오를 작성하면<br>누락된 평가 항목을 [즉시] / [중요] / [입원후] 로 분류해드립니다</small>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===================== REFERENCE DATA =====================
+const REFERENCE = {"history":{"most_critical":"LKW (Last Known Well) 시간","checklist":["LKW 또는 증상 발생 정확한 시각","증상 시작 양상 (갑작스럽게 vs 서서히 진행)","이전 뇌졸중 또는 TIA 병력","심방세동, 심근경색, 판막질환 등 심장 병력","고혈압, 당뇨병, 고지혈증, 흡연 병력","현재 복용 약물 — 항응고제(와파린, NOAC), 항혈소판제","최근 3개월 이내 심근경색","최근 14일 이내 주요 수술 또는 심한 외상","최근 21일 이내 소화기/비뇨기계 출혈","최근 7일 이내 압박 불가능 동맥 천자","두개내 출혈 과거력 또는 두개내 종양/AVM/동맥류","임신 여부","경련 여부 (경련 후 Todd's palsy 감별)"],"cv_risk":[],"tpa_meds":[],"etiology_clues":["경부 외상 또는 경부 통증 → 경동맥/추골동맥 박리 (extracranial dissection)","발열, 근육통, 전신 증상 → 세균성 심내막염 (bacterial endocarditis) — 다발성 경색·뇌출혈·뇌병증 동반 가능","발살바(Valsalva) 수기 또는 힘주기 중 발생 → 역설적 색전 (paradoxical embolism) / PFO — DVT 유무도 확인","젊은 환자 + 설명 안 되는 뇌졸중 → 약물 남용, 항인지질항체 증후군(APLS), 혈액 질환(겸상 적혈구빈혈, JAK2 양성 골수증식), 혈관염","임신/산후 또는 경구 피임제 복용 → 고응고 상태, 뇌정맥 혈전증 (CVT)","반복 유산 또는 정맥 혈전 과거력 → 항인지질항체 증후군 (APLS)"]},"exam":{"nihss":["1a. 의식 수준 (LOC) (0–3점)","1b. 의식 질문 (달, 나이) (0–2점)","1c. 의식 명령 (눈감기, 주먹쥐기) (0–2점)","2. 주시 (Gaze) (0–2점)","3. 시야 (Visual fields) (0–3점)","4. 안면 마비 (Facial palsy) (0–3점)","5a. 우측 상지 운동 (0–4점)","5b. 좌측 상지 운동 (0–4점)","6a. 우측 하지 운동 (0–4점)","6b. 좌측 하지 운동 (0–4점)","7. 사지 조화 운동 (Limb ataxia) (0–2점)","8. 감각 (Sensory) (0–2점)","9. 언어 (Best language / Aphasia) (0–3점)","10. 구음 장애 (Dysarthria) (0–2점)","11. 소거 및 무시 (Extinction/Neglect) (0–2점)"],"vitals":[],"posterior":["HINTS exam (Head Impulse·Nystagmus·Test of Skew)","소뇌: finger-nose, heel-shin, Romberg","안진 방향, 연하·발성 장애, Horner"],"lvo_scales":["RACE scale (≥5점)","FAST-ED scale (≥4점)"],"dysphagia":"3-oz water swallow test"},"imaging":{"ncct":"비조영 CT — 출혈 배제, ASPECTS 평가","cta":"CTA 두개내+두개외 — LVO 확인","ctp_mri":"발생 4.5h 이상 또는 wake-up → CTP 또는 MRI DWI-FLAIR mismatch","mri_seq":["DWI (급성 경색)","FLAIR (시간 추정)","T2*/GRE (미세출혈)","MRA (혈관)"],"inpatient":["심초음파(TTE/TEE)","경동맥 이중초음파","장기 심전도 모니터링","TCD (PFO 평가)"]},"labs":{"essential":["혈당 (Fingerstick glucose)","CBC (전혈구계산)","PT/INR","aPTT","BMP (전해질, Cr, BUN, eGFR)","Troponin (심근효소)","12-lead ECG"],"additional":["β-hCG","Anti-Xa level","LFT (간기능 검사)","독성/약물 스크리닝","단순 흉부 방사선 (CXR)","CSF (뇌척수액) 검사","EEG (뇌파 검사)"],"inpatient":["공복혈당/HbA1c","지질 검사(LDL)","혈전성향 검사(젊은 환자)","APLS 패널","ESR/CRP/ANA/ANCA(혈관염 의심)","JAK2 V617F"]}};
+
+// ===================== EXAMPLES =====================
+const EXAMPLES = [
+  "62세 여자. 3시간 전 갑자기 발생한 실어증과 우측 편마비. 내원 당시 혈압 185/110 mmHg, 맥박 88회/분 불규칙. 환자는 대화가 불가능한 상태이며 보호자가 동행했다. NCCT상 출혈 없음.",
+  "75세 남자. 2시간 전부터 갑작스러운 어지럼증과 구토, 보행 불능. 혈압 165/95 mmHg, 맥박 72회/분 규칙. 의식은 명료하며 팔다리 힘은 정상. 평소 고혈압 약 복용 중.",
+  "55세 여자. 아침에 일어났더니 우측 편마비와 언어 장애가 있었음. 증상 발생 시각 불명확. 전날 밤 11시까지는 정상이었음. 혈압 170/100 mmHg, 맥박 76회/분 규칙.",
+  "68세 남자. 내원 90분 전 좌측 편마비 발생. tPA 30분 전 투여 완료. 혈관 조영에서 우측 MCA M1 폐색 확인. 현재 EVT 고려 중. NIHSS 18점."
+];
+
+// ===================== SYSTEM PROMPT =====================
+function buildSystemPrompt() {
+  const ref = REFERENCE;
+  return `당신은 급성 허혈성 뇌졸중 응급 평가 전문가입니다. 대한뇌졸중학회 진료지침(2024)과 AHA/ASA 2024 가이드라인, Queen Square Textbook of Neurology 3e에 기반한 알고리듬(v3.0)을 사용합니다.
+
+## 알고리듬 기반 체크리스트
+
+### [HISTORY — S3]
+핵심: ${ref.history.most_critical}
+
+필수 확인 항목:
+${ref.history.checklist.map((c,i) => `${i+1}. ${c}`).join('\n')}
+
+원인 단서:
+${ref.history.etiology_clues.join('\n')}
+
+### [EXAM — S4]
+NIHSS 15항목:
+${ref.exam.nihss.join(', ')}
+
+후순환 검사: ${ref.exam.posterior.join(' / ')}
+LVO 선별 척도: ${ref.exam.lvo_scales.join(', ')}
+연하 검사: ${ref.exam.dysphagia}
+
+### [IMAGING — S5]
+1차: ${ref.imaging.ncct}
+혈관: ${ref.imaging.cta}
+시간 불명/늦은 창: ${ref.imaging.ctp_mri}
+MRI 시퀀스: ${ref.imaging.mri_seq.join(', ')}
+입원 후: ${ref.imaging.inpatient.join(', ')}
+
+### [LABS — S6]
+응급 필수: ${ref.labs.essential.join(', ')}
+추가 고려: ${ref.labs.additional.join(', ')}
+입원 후 원인 규명: ${ref.labs.inpatient.join(', ')}
+
+---
+
+## 응답 규칙
+
+1. 시나리오에서 명시적으로 언급된 정보를 확인한다.
+2. 4개 카테고리 기준으로 누락 항목을 파악한다.
+3. 아래 형식으로 정확히 출력한다:
+
+[V] 확인된 정보
+시나리오에서 이미 제공된 주요 정보를 간략히 나열
+
+[즉시] 지금 당장 확인 필요 — tPA·EVT 결정에 직접 영향
+항목별로 왜 지금 필요한지 한 줄 이유 포함
+
+[중요] 추가 확인 필요 — 치료 계획·안전 관리
+항목별 이유 포함
+
+[입원후] 입원 후 확인 — 이차 예방·원인 분류
+항목별 목적 포함
+
+[포인트] 이 시나리오의 핵심 임상 고려사항
+2–4문장으로 이 케이스의 핵심 임상 판단 포인트 설명
+
+절대로 마크다운 볼드(**) 기호를 사용하지 말 것. 응답은 반드시 한국어로, 간결하고 실용적으로 작성할 것.`;
+}
+
+// ===================== STATE =====================
+let history = [];
+let currentId = null;
+let isStreaming = false;
+
+// ===================== UTILS =====================
+function toggleApiKey() {
+  const inp = document.getElementById('apiKey');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+function getApiKey() {
+  return document.getElementById('apiKey').value.trim();
+}
+
+function setApiStatus(msg, ok) {
+  const el = document.getElementById('apiStatus');
+  el.textContent = msg;
+  el.className = 'api-status ' + (ok ? 'ok' : ok === false ? 'err' : '');
+}
+
+document.getElementById('scenarioInput').addEventListener('input', function() {
+  document.getElementById('charCount').textContent = this.value.length + '자';
+});
+
+document.getElementById('apiKey').addEventListener('input', function() {
+  if (this.value.startsWith('sk-ant-')) setApiStatus('✓ 키 형식 확인됨', true);
+  else if (this.value) setApiStatus('올바른 Anthropic API 키를 입력하세요', false);
+  else setApiStatus('', null);
+});
+
+function loadExample(idx) {
+  document.getElementById('scenarioInput').value = EXAMPLES[idx];
+  document.getElementById('charCount').textContent = EXAMPLES[idx].length + '자';
+}
+
+// ===================== HIGHLIGHT =====================
+function highlightOutput(text) {
+  const div = document.createElement('div');
+  div.className = 'analysis-output';
+  
+  const lines = text.split('\n');
+  let html = '';
+  for (const line of lines) {
+    let escaped = line.replace(/\*\*/g,'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    if (escaped.match(/^\*\*\[V\]/)) {
+      escaped = escaped.replace(/\*\*/g,'');
+      html += `<span class="out-confirmed">${escaped}</span>\n`;
+    } else if (escaped.match(/^\*\*\[즉시\]/)) {
+      escaped = escaped.replace(/\*\*/g,'');
+      html += `<span class="out-immediate">${escaped}</span>\n`;
+    } else if (escaped.match(/^\*\*\[중요\]/)) {
+      escaped = escaped.replace(/\*\*/g,'');
+      html += `<span class="out-important">${escaped}</span>\n`;
+    } else if (escaped.match(/^\*\*\[입원후\]/)) {
+      escaped = escaped.replace(/\*\*/g,'');
+      html += `<span class="out-inpatient">${escaped}</span>\n`;
+    } else if (escaped.match(/^\*\*\[포인트\]/)) {
+      escaped = escaped.replace(/\*\*/g,'');
+      html += `<span class="out-point">${escaped}</span>\n`;
+    } else if (escaped.match(/^- \[V\]/)) {
+      html += `<span class="out-confirmed">${escaped}</span>\n`;
+    } else if (escaped.match(/^- \[즉시\]/)) {
+      html += `<span class="out-immediate">${escaped}</span>\n`;
+    } else if (escaped.match(/^- \[중요\]/)) {
+      html += `<span class="out-important">${escaped}</span>\n`;
+    } else if (escaped.match(/^- \[입원후\]/)) {
+      html += `<span class="out-inpatient">${escaped}</span>\n`;
+    } else {
+      html += escaped + '\n';
+    }
+  }
+  
+  div.innerHTML = html;
+  return div;
+}
+
+// ===================== HISTORY =====================
+function addToHistory(scenario, id) {
+  const preview = scenario.slice(0, 60);
+  const title = `시나리오 ${history.length + 1}`;
+  const time = new Date().toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit'});
+  history.push({ id, title, preview, time, scenario, result: '' });
+  renderHistory();
+  return history.length - 1;
+}
+
+function renderHistory() {
+  const list = document.getElementById('historyList');
+  if (history.length === 0) {
+    list.innerHTML = '<div class="history-empty">분석 결과가 여기에 표시됩니다</div>';
+    return;
+  }
+  list.innerHTML = history.slice().reverse().map((h, ri) => {
+    const i = history.length - 1 - ri;
+    return `<div class="history-item ${h.id === currentId ? 'active' : ''}" onclick="showHistory(${i})">
+      <div class="h-title">${h.title}</div>
+      <div class="h-time">${h.time}</div>
+      <div class="h-preview">${h.preview}${h.preview.length >= 60 ? '...' : ''}</div>
+    </div>`;
+  }).join('');
+}
+
+function showHistory(idx) {
+  const h = history[idx];
+  currentId = h.id;
+  renderHistory();
+  const out = document.getElementById('outputArea');
+  out.innerHTML = '';
+
+  const block = document.createElement('div');
+  block.className = 'analysis-block';
+
+  const scBlock = document.createElement('div');
+  scBlock.className = 'analysis-scenario';
+  scBlock.innerHTML = `<div class="label">입력 시나리오</div><div class="text">${h.scenario}</div>`;
+  block.appendChild(scBlock);
+
+  if (h.result) {
+    block.appendChild(highlightOutput(h.result));
+  }
+  out.appendChild(block);
+}
+
+// ===================== ANALYZE =====================
+async function analyze() {
+  const apiKey = getApiKey();
+  const scenario = document.getElementById('scenarioInput').value.trim();
+
+  if (!apiKey) { setApiStatus('API 키를 입력해주세요', false); return; }
+  if (!scenario) { alert('시나리오를 입력해주세요'); return; }
+  if (isStreaming) return;
+
+  isStreaming = true;
+  const btn = document.getElementById('analyzeBtn');
+  btn.disabled = true;
+  document.getElementById('btnIcon').textContent = '⏳';
+  document.getElementById('btnText').textContent = '분석 중...';
+
+  const id = Date.now().toString();
+  currentId = id;
+  const histIdx = addToHistory(scenario, id);
+
+  // Setup output area
+  const out = document.getElementById('outputArea');
+  out.innerHTML = '';
+  const block = document.createElement('div');
+  block.className = 'analysis-block';
+
+  const scBlock = document.createElement('div');
+  scBlock.className = 'analysis-scenario';
+  scBlock.innerHTML = `<div class="label">입력 시나리오</div><div class="text">${scenario.replace(/</g,'&lt;')}</div>`;
+  block.appendChild(scBlock);
+
+  const statusBar = document.createElement('div');
+  statusBar.className = 'status-bar';
+  statusBar.innerHTML = '<div class="spinner"></div><span>Claude가 알고리듬을 기반으로 분석 중...</span>';
+  block.appendChild(statusBar);
+
+  const outputDiv = document.createElement('div');
+  outputDiv.className = 'analysis-output';
+  block.appendChild(outputDiv);
+  out.appendChild(block);
+
+  const cursor = document.createElement('span');
+  cursor.className = 'streaming-cursor';
+
+  let fullText = '';
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 4096,
+        stream: true,
+        system: buildSystemPrompt(),
+        messages: [{ role: 'user', content: `다음 임상 시나리오를 분석해주세요:\n\n${scenario}` }]
+      })
+    });
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.error?.message || `HTTP ${response.status}`);
+    }
+
+    setApiStatus('✓ 연결됨', true);
+    statusBar.innerHTML = '<div class="spinner"></div><span>스트리밍 수신 중...</span>';
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      const chunk = decoder.decode(value, { stream: true });
+      const lines = chunk.split('\n');
+
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const data = line.slice(6).trim();
+        if (data === '[DONE]') continue;
+        try {
+          const obj = JSON.parse(data);
+          if (obj.type === 'content_block_delta' && obj.delta?.type === 'text_delta') {
+            fullText += obj.delta.text;
+            // Live render
+            const lines2 = fullText.split('\n');
+            let html = '';
+            for (const l of lines2) {
+              let e = l.replace(/\*\*/g,'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+              if (e.match(/^\*\*\[V\]/)) { e = e.replace(/\*\*/g,''); html += `<span class="out-confirmed">${e}</span>\n`; }
+              else if (e.match(/^\*\*\[즉시\]/)) { e = e.replace(/\*\*/g,''); html += `<span class="out-immediate">${e}</span>\n`; }
+              else if (e.match(/^\*\*\[중요\]/)) { e = e.replace(/\*\*/g,''); html += `<span class="out-important">${e}</span>\n`; }
+              else if (e.match(/^\*\*\[입원후\]/)) { e = e.replace(/\*\*/g,''); html += `<span class="out-inpatient">${e}</span>\n`; }
+              else if (e.match(/^\*\*\[포인트\]/)) { e = e.replace(/\*\*/g,''); html += `<span class="out-point">${e}</span>\n`; }
+              else { html += e + '\n'; }
+            }
+            outputDiv.innerHTML = html;
+            outputDiv.appendChild(cursor);
+            out.scrollTop = out.scrollHeight;
+          }
+        } catch {}
+      }
+    }
+
+    // Done
+    cursor.remove();
+    history[histIdx].result = fullText;
+    statusBar.remove();
+
+  } catch (err) {
+    cursor.remove();
+    statusBar.remove();
+    outputDiv.textContent = `오류: ${err.message}`;
+    outputDiv.style.color = 'var(--red)';
+    setApiStatus('연결 오류: ' + err.message, false);
+  }
+
+  isStreaming = false;
+  btn.disabled = false;
+  document.getElementById('btnIcon').textContent = '⚡';
+  document.getElementById('btnText').textContent = '갭 분석 시작';
+  renderHistory();
+}
+
+// Enter to submit (Ctrl+Enter)
+document.getElementById('scenarioInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+    e.preventDefault();
+    analyze();
+  }
+});
+</script>
+</body>
+</html>
