@@ -1,19 +1,17 @@
 {
   "meta": {
     "title": "응급실 허혈성 뇌졸중 평가·진단·치료 알고리듬",
-    "version": "2.0",
-    "based_on": "대한뇌졸중학회 진료지침 개정판 (요약본), AHA/ASA 2024",
+    "version": "3.0",
+    "based_on": "대한뇌졸중학회 진료지침 개정판 (요약본), AHA/ASA 2024, Queen Square Textbook 3e",
+    "changelog": "v3.0 — S3 병력청취·S4 신경학적 검사·S5 영상검사·S6 혈액검사 전면 보강 (4대 카테고리 연구 반영)",
     "note": "실제 임상 결정은 개별 환자 상황을 반드시 고려할 것"
   },
-
   "steps": [
-
     {
       "id": "S1",
       "phase": "뇌졸중 의심 (Stroke Activation)",
       "title": "증상 인식 — 허혈성 뇌졸중 의심",
       "key_principle": "갑작스러운(sudden onset) 신경학적 결손이 핵심. 환자가 직접 호소하지 않더라도 증상 패턴으로 의심해야 함.",
-
       "screening_tool": {
         "name": "BE-FAST",
         "items": [
@@ -33,7 +31,7 @@
             "letter": "F",
             "english": "Face",
             "korean": "안면",
-            "description": "웃을 때 한쪽 얼굴이 처지거나 비대칭이 나타남 → '이 보여보세요' 테스트"
+            "description": "웃을 때 한쪽 얼굴이 처지거나 비대칭이 나타남"
           },
           {
             "letter": "A",
@@ -55,7 +53,12 @@
           }
         ]
       },
-
+      "other_prehospital_scales": [
+        "Cincinnati Prehospital Stroke Scale",
+        "ROSIER (Recognition of Stroke in the Emergency Room)",
+        "FAST (Face Arm Speech Time)",
+        "RACE / FAST-ED — LVO 가능성이 높은 환자 선별용 (혈전제거술 경로 안내)"
+      ],
       "symptoms_by_category": {
         "motor": [
           "갑작스러운 한쪽(또는 양쪽) 팔·다리 위약감 또는 마비",
@@ -65,10 +68,10 @@
         "speech_language": [
           "갑작스러운 언어 이해 불능 (Wernicke aphasia)",
           "갑작스러운 발화 불능 또는 말 못 찾기 (Broca aphasia)",
-          "갑작스러운 구음 장애 — 말은 나오지만 발음이 어눌함 (dysarthria)"
+          "갑작스러운 구음 장애 (dysarthria)"
         ],
         "vision": [
-          "갑작스러운 한쪽 눈 시력 소실 (amaurosis fugax → 일과성; 지속 → 망막동맥폐색 또는 posterior circulation)",
+          "갑작스러운 한쪽 눈 시력 소실 (amaurosis fugax)",
           "갑작스러운 반측 시야 결손 (hemianopia)",
           "갑작스러운 복시 (diplopia)"
         ],
@@ -81,31 +84,52 @@
           "갑작스러운 극심한 두통 ('생애 최악의 두통', 벼락 두통) — 출혈성도 고려"
         ]
       },
-
+      "posterior_circulation_caution": "후순환 증상(어지러움·균형 장애·두통)은 비특이적이어서 전순환보다 오진이 3배 많음. 적극적 의심 필요.",
       "stroke_mimics": {
         "description": "뇌졸중과 유사한 증상을 보이는 감별 질환. 반드시 배제 필요.",
         "conditions": [
-          { "name": "저혈당 (Hypoglycemia)", "key": "혈당 즉시 측정 필수 — 교정 후 증상 소실 여부 확인" },
-          { "name": "Todd's paralysis", "key": "경련 이후 발생한 일시적 편마비; 경련 목격 여부 확인" },
-          { "name": "복합 편두통 (Hemiplegic migraine)", "key": "두통 선행 여부, 과거력 확인" },
-          { "name": "뇌종양 또는 경막하혈종", "key": "CT에서 감별" },
-          { "name": "전해질 이상 (저나트륨혈증 등)", "key": "혈액검사로 확인" },
-          { "name": "전환장애 (Conversion disorder)", "key": "신경학적 패턴의 해부학적 불일치" },
-          { "name": "뇌염·뇌수막염", "key": "발열·경부강직 동반; 필요 시 CSF 검사" },
-          { "name": "고혈압성 뇌병증", "key": "극심한 고혈압 + 의식 변화" }
+          {
+            "name": "저혈당 (Hypoglycemia)",
+            "key": "혈당 즉시 측정 필수 — 교정 후 증상 소실 여부 확인"
+          },
+          {
+            "name": "Todd's paralysis",
+            "key": "경련 이후 발생한 일시적 편마비; 경련 목격 여부 확인"
+          },
+          {
+            "name": "복합 편두통 (Hemiplegic migraine)",
+            "key": "두통 선행 여부, 과거력 확인"
+          },
+          {
+            "name": "뇌종양 또는 경막하혈종",
+            "key": "CT에서 감별"
+          },
+          {
+            "name": "전해질 이상 (저나트륨혈증 등)",
+            "key": "혈액검사로 확인"
+          },
+          {
+            "name": "전환장애 (Conversion disorder)",
+            "key": "신경학적 패턴의 해부학적 불일치"
+          },
+          {
+            "name": "뇌염·뇌수막염",
+            "key": "발열·경부강직 동반; 필요 시 CSF 검사"
+          },
+          {
+            "name": "고혈압성 뇌병증",
+            "key": "극심한 고혈압 + 의식 변화"
+          }
         ]
       },
-
       "action": "Stroke Code 발령 → 즉시 STEP 2 진행",
       "time_target": "증상 인식 즉시"
     },
-
     {
       "id": "S2",
       "phase": "초기 안정화 (Initial Stabilization)",
       "title": "ABC 안정화 + 즉각적 처치",
       "time_target": "Door-to-Assessment < 10분",
-
       "immediate_actions": [
         {
           "category": "기도 (Airway)",
@@ -142,7 +166,6 @@
           ]
         }
       ],
-
       "vital_signs_management": {
         "temperature": "정상 유지. 발열(≥37.5°C) 시 해열제 투여 + 원인 감별 (흡인성 폐렴 우선 확인)",
         "blood_pressure": {
@@ -159,35 +182,131 @@
         }
       }
     },
-
     {
       "id": "S3",
       "phase": "핵심 병력 청취 (Critical History)",
       "title": "Last Known Well 시간 확인 및 병력 청취",
       "time_target": "Door-to-History < 10분",
-
+      "source": "대한뇌졸중학회 진료지침, AHA/ASA 2024, Queen Square Textbook 3e",
       "most_critical": {
         "name": "Last Known Well (LKW) 시간",
         "description": "환자가 완전히 정상이었음을 마지막으로 확인한 시각. 증상 발생 시각이 불명확할 경우 LKW를 사용.",
-        "wake_up_stroke": "수면 중 발생 → LKW = 취침 시각. Wake-up stroke는 '시간 불명' 처리 후 MRI DWI-FLAIR mismatch 또는 CTP로 치료 가능성 재평가"
+        "wake_up_stroke": "수면 중 발생 → LKW = 취침 시각. Wake-up stroke는 '시간 불명' 처리 후 MRI DWI-FLAIR mismatch 또는 CTP로 치료 가능성 재평가",
+        "info_source": "환자가 답하기 어려울 경우 보호자·목격자·119 구급대원에게 확인"
       },
-
       "history_checklist": [
-        { "item": "LKW 또는 증상 발생 정확한 시각", "priority": "필수" },
-        { "item": "증상 시작 양상 (갑작스럽게 vs 서서히 진행)", "priority": "필수" },
-        { "item": "이전 뇌졸중 또는 TIA 병력", "priority": "필수 (3개월 이내 → tPA 금기)" },
-        { "item": "심방세동, 심근경색, 판막질환 등 심장 병력", "priority": "필수" },
-        { "item": "고혈압, 당뇨병, 고지혈증, 흡연 병력", "priority": "필수 (치료 결정 영향)" },
-        { "item": "현재 복용 약물 — 항응고제(와파린, NOAC), 항혈소판제", "priority": "필수 (tPA 금기 판단)" },
-        { "item": "최근 3개월 이내 심근경색", "priority": "필수 (tPA 금기)" },
-        { "item": "최근 14일 이내 주요 수술 또는 심한 외상", "priority": "필수 (tPA 금기)" },
-        { "item": "최근 21일 이내 소화기/비뇨기계 출혈", "priority": "필수 (tPA 금기)" },
-        { "item": "최근 7일 이내 압박 불가능 동맥 천자", "priority": "필수 (tPA 금기)" },
-        { "item": "두개내 출혈 과거력 또는 두개내 종양/AVM/동맥류", "priority": "필수 (tPA 절대 금기)" },
-        { "item": "임신 여부", "priority": "필수 (상대적 금기)" },
-        { "item": "경련 여부 (경련 후 Todd's palsy 감별)", "priority": "필수 (tPA 금기)" }
+        {
+          "item": "LKW 또는 증상 발생 정확한 시각",
+          "priority": "필수"
+        },
+        {
+          "item": "증상 시작 양상 (갑작스럽게 vs 서서히 진행)",
+          "priority": "필수"
+        },
+        {
+          "item": "이전 뇌졸중 또는 TIA 병력",
+          "priority": "필수 (3개월 이내 → tPA 금기)"
+        },
+        {
+          "item": "심방세동, 심근경색, 판막질환 등 심장 병력",
+          "priority": "필수"
+        },
+        {
+          "item": "고혈압, 당뇨병, 고지혈증, 흡연 병력",
+          "priority": "필수 (치료 결정 영향)"
+        },
+        {
+          "item": "현재 복용 약물 — 항응고제(와파린, NOAC), 항혈소판제",
+          "priority": "필수 (tPA 금기 판단)"
+        },
+        {
+          "item": "최근 3개월 이내 심근경색",
+          "priority": "필수 (tPA 금기)"
+        },
+        {
+          "item": "최근 14일 이내 주요 수술 또는 심한 외상",
+          "priority": "필수 (tPA 금기)"
+        },
+        {
+          "item": "최근 21일 이내 소화기/비뇨기계 출혈",
+          "priority": "필수 (tPA 금기)"
+        },
+        {
+          "item": "최근 7일 이내 압박 불가능 동맥 천자",
+          "priority": "필수 (tPA 금기)"
+        },
+        {
+          "item": "두개내 출혈 과거력 또는 두개내 종양/AVM/동맥류",
+          "priority": "필수 (tPA 절대 금기)"
+        },
+        {
+          "item": "임신 여부",
+          "priority": "필수 (상대적 금기)"
+        },
+        {
+          "item": "경련 여부 (경련 후 Todd's palsy 감별)",
+          "priority": "필수 (tPA 금기)"
+        }
       ],
-
+      "cardiovascular_risk_factors": {
+        "description": "심뇌혈관 위험인자 확인 — 치료 결정 및 이차 예방 계획에 영향",
+        "major_risk_factors": [
+          "고혈압 (가장 중요한 조절 가능 위험인자 — 뇌졸중 위험의 55.5% 기여)",
+          "당뇨병 (뇌졸중 위험 2–4배 증가, 나이·혈압과 독립적)",
+          "흡연 (젊은 환자에서 위험 4배 증가, 경동맥 협착 촉진)",
+          "심방세동 (항응고 미실시 시 연간 4% 뇌졸중 위험; 과거 TIA/뇌졸중 시 12%)",
+          "이상지질혈증 (LDL↑ → 죽상경화 진행)",
+          "경동맥 협착 병력",
+          "비만·운동 부족",
+          "과음 (중증 이상: 허혈성·출혈성 모두 위험 증가)",
+          "약물 남용 (코카인·암페타민: 고혈압성 뇌졸중, 혈관연축, 혈관염 유발)"
+        ]
+      },
+      "medication_tpa_relevance": {
+        "warfarin": "INR 확인 필수; INR > 1.7 → tPA 금기",
+        "noac": "마지막 복용 시각 확인; < 48시간 → tPA 금기. ≥ 48시간 + 신기능 정상이면 개별 판단",
+        "heparin": "48시간 이내 사용 + aPTT 연장 → tPA 금기",
+        "antiplatelet": "tPA 금기 아님; 이차 예방 계획에 반영",
+        "oral_contraceptive": "역설적 색전(PFO 동반 시) 위험인자로 기록"
+      },
+      "etiology_clue_history": {
+        "description": "Queen Square Textbook 3e — 원인을 시사하는 상황별 병력 단서",
+        "clues": [
+          {
+            "clue": "경부 외상 또는 경부 통증",
+            "suggests": "경동맥/추골동맥 박리 (extracranial dissection)"
+          },
+          {
+            "clue": "발열, 근육통, 전신 증상",
+            "suggests": "세균성 심내막염 (bacterial endocarditis) — 다발성 경색·뇌출혈·뇌병증 동반 가능"
+          },
+          {
+            "clue": "발살바(Valsalva) 수기 또는 힘주기 중 발생",
+            "suggests": "역설적 색전 (paradoxical embolism) / PFO — DVT 유무도 확인"
+          },
+          {
+            "clue": "젊은 환자 + 설명 안 되는 뇌졸중",
+            "suggests": "약물 남용, 항인지질항체 증후군(APLS), 혈액 질환(겸상 적혈구빈혈, JAK2 양성 골수증식), 혈관염"
+          },
+          {
+            "clue": "임신/산후 또는 경구 피임제 복용",
+            "suggests": "고응고 상태, 뇌정맥 혈전증 (CVT)"
+          },
+          {
+            "clue": "반복 유산 또는 정맥 혈전 과거력",
+            "suggests": "항인지질항체 증후군 (APLS)"
+          }
+        ]
+      },
+      "stroke_mimics_rapid_screen": {
+        "description": "병력에서 Stroke Mimic을 신속히 감별하는 핵심 질문",
+        "questions": [
+          "경련을 목격했는가? (Todd's paralysis)",
+          "과거 비슷한 두통이 있었는가? (편두통)",
+          "최근 발열·두통이 있었는가? (뇌염/뇌수막염)",
+          "혈당을 즉시 확인했는가? (저혈당)"
+        ]
+      },
       "decision_affecting_conditions": {
         "age_over_80": {
           "effect_on_tPA_0_to_3h": "81세 이상도 3시간 이내 tPA 적용 가능 (권고수준 A)",
@@ -232,38 +351,136 @@
         }
       }
     },
-
     {
       "id": "S4",
       "phase": "신경학적 평가 (Neurological Assessment)",
-      "title": "NIHSS (NIH Stroke Scale) 평가",
+      "title": "NIHSS 평가 + 포괄적 신경학적 검사",
       "time_target": "Door-to-NIHSS < 15분",
-
+      "source": "대한뇌졸중학회 진료지침, Queen Square Textbook 3e",
+      "initial_overview": {
+        "description": "응급실 입실 시 첫인상으로 반구 뇌졸중 여부를 즉시 파악",
+        "signs": [
+          "주시 편위(gaze preference) 또는 두부 편위 → 병변 측 반구 경색 시사",
+          "반대측 자발 운동 감소",
+          "의식 저하 (GCS 빠른 평가)"
+        ]
+      },
+      "vital_signs_in_exam": {
+        "required": [
+          "호흡수",
+          "맥박",
+          "혈압 (양팔 측정)",
+          "체온",
+          "SpO₂"
+        ],
+        "note": "활력징후는 신경학적 검사의 일부로 반드시 포함 (권고수준 C)"
+      },
       "nihss": {
         "total_score_range": "0–42점",
+        "completion_time": "약 10분 이내 완료 가능",
         "items": [
-          { "number": "1a", "name": "의식 수준 (LOC)", "range": "0–3", "note": "0=명료, 1=기면, 2=혼미, 3=혼수" },
-          { "number": "1b", "name": "의식 질문 (달, 나이)", "range": "0–2" },
-          { "number": "1c", "name": "의식 명령 (눈감기, 주먹쥐기)", "range": "0–2" },
-          { "number": "2", "name": "주시 (Gaze)", "range": "0–2" },
-          { "number": "3", "name": "시야 (Visual fields)", "range": "0–3" },
-          { "number": "4", "name": "안면 마비 (Facial palsy)", "range": "0–3" },
-          { "number": "5a", "name": "우측 상지 운동", "range": "0–4" },
-          { "number": "5b", "name": "좌측 상지 운동", "range": "0–4" },
-          { "number": "6a", "name": "우측 하지 운동", "range": "0–4" },
-          { "number": "6b", "name": "좌측 하지 운동", "range": "0–4" },
-          { "number": "7", "name": "사지 조화 운동 (Limb ataxia)", "range": "0–2" },
-          { "number": "8", "name": "감각 (Sensory)", "range": "0–2" },
-          { "number": "9", "name": "언어 (Best language / Aphasia)", "range": "0–3" },
-          { "number": "10", "name": "구음 장애 (Dysarthria)", "range": "0–2" },
-          { "number": "11", "name": "소거 및 무시 (Extinction/Neglect)", "range": "0–2" }
+          {
+            "number": "1a",
+            "name": "의식 수준 (LOC)",
+            "range": "0–3",
+            "note": "0=명료, 1=기면, 2=혼미, 3=혼수"
+          },
+          {
+            "number": "1b",
+            "name": "의식 질문 (달, 나이)",
+            "range": "0–2"
+          },
+          {
+            "number": "1c",
+            "name": "의식 명령 (눈감기, 주먹쥐기)",
+            "range": "0–2"
+          },
+          {
+            "number": "2",
+            "name": "주시 (Gaze)",
+            "range": "0–2"
+          },
+          {
+            "number": "3",
+            "name": "시야 (Visual fields)",
+            "range": "0–3"
+          },
+          {
+            "number": "4",
+            "name": "안면 마비 (Facial palsy)",
+            "range": "0–3"
+          },
+          {
+            "number": "5a",
+            "name": "우측 상지 운동",
+            "range": "0–4"
+          },
+          {
+            "number": "5b",
+            "name": "좌측 상지 운동",
+            "range": "0–4"
+          },
+          {
+            "number": "6a",
+            "name": "우측 하지 운동",
+            "range": "0–4"
+          },
+          {
+            "number": "6b",
+            "name": "좌측 하지 운동",
+            "range": "0–4"
+          },
+          {
+            "number": "7",
+            "name": "사지 조화 운동 (Limb ataxia)",
+            "range": "0–2"
+          },
+          {
+            "number": "8",
+            "name": "감각 (Sensory)",
+            "range": "0–2"
+          },
+          {
+            "number": "9",
+            "name": "언어 (Best language / Aphasia)",
+            "range": "0–3"
+          },
+          {
+            "number": "10",
+            "name": "구음 장애 (Dysarthria)",
+            "range": "0–2"
+          },
+          {
+            "number": "11",
+            "name": "소거 및 무시 (Extinction/Neglect)",
+            "range": "0–2"
+          }
+        ],
+        "nihss_limitations": [
+          "비우성 반구 기능(무시·실행증·anosognosia)을 과소평가",
+          "후순환 결손(소뇌·뇌간)을 충분히 반영하지 못함 → 보완 검사 필요"
         ],
         "severity_classification": [
-          { "score": "0", "grade": "정상" },
-          { "score": "1–4", "grade": "경증 (Minor stroke)" },
-          { "score": "5–15", "grade": "중등도" },
-          { "score": "16–20", "grade": "중증" },
-          { "score": "21–42", "grade": "매우 중증" }
+          {
+            "score": "0",
+            "grade": "정상"
+          },
+          {
+            "score": "1–4",
+            "grade": "경증 (Minor stroke)"
+          },
+          {
+            "score": "5–15",
+            "grade": "중등도"
+          },
+          {
+            "score": "16–20",
+            "grade": "중증"
+          },
+          {
+            "score": "21–42",
+            "grade": "매우 중증"
+          }
         ],
         "treatment_thresholds": {
           "tPA": "NIHSS ≥ 4 또는 기능장애를 유발하는 증상 (NIHSS < 4이라도 장애 유발 시 고려)",
@@ -271,15 +488,66 @@
           "EVT_consideration": "NIHSS ≥ 6 + LVO 확인",
           "malignant_MCA": "NIHSS ≥ 15 + 의식 저하(항목 1a ≥ 1점) → 감압수술 기준 포함"
         }
+      },
+      "posterior_circulation_exam": {
+        "description": "후순환 뇌졸중 의심 시 추가 검사 — 전순환보다 오진 3배 많으므로 적극 시행",
+        "HINTS_exam": {
+          "name": "HINTS (Head Impulse–Nystagmus–Test of Skew)",
+          "purpose": "급성 현훈 환자에서 중추성 vs. 말초성 감별",
+          "interpretation": {
+            "central_pattern": "Head Impulse 정상(-) + 방향 변환 안진 + Skew deviation 양성 → 중추성 병변 강력 시사 (뇌졸중)",
+            "peripheral_pattern": "Head Impulse 양성(+) + 단방향 안진 + Skew 없음 → 말초성 (전정신경염 등)",
+            "caution": "비전문가가 시행 시 신뢰도 저하; 급성기 뇌졸중 집단에서 완전 검증 미완"
+          }
+        },
+        "additional_cerebellar_tests": [
+          "손가락-코 검사 (Finger-to-nose test)",
+          "발꿈치-정강이 검사 (Heel-to-shin test)",
+          "Romberg 검사",
+          "보행 검사 (tandem gait)"
+        ],
+        "cranial_nerve_exam": [
+          "III·VI번 뇌신경 (복시, 주시 마비)",
+          "VII번 뇌신경 (안면 마비)",
+          "IX·X번 뇌신경 (연하 장애, Gag reflex)",
+          "Horner 증후군 (ptosis, miosis, anhidrosis) — Wallenberg 증후군 시사",
+          "교차 감각 소실 (동측 안면 + 반대측 신체) — 외측 연수 경색 (Wallenberg)"
+        ]
+      },
+      "non_dominant_hemisphere_exam": {
+        "description": "NIHSS로 과소평가되는 비우성 반구 기능 — 별도 평가 필요",
+        "items": [
+          "편측 무시 (Hemispatial neglect / Anosognosia)",
+          "구성 실행증 (Constructional apraxia)",
+          "반측 공간 무시 (Extinction to double simultaneous stimulation)",
+          "옷 입기 실행증 (Dressing apraxia)"
+        ]
+      },
+      "dysphagia_screening": {
+        "timing": "경구 식이 시작 전 반드시 시행",
+        "action_if_failed": "비위관(L-tube) 삽입 — 흡인성 폐렴 예방",
+        "note": "GCS ≤8 또는 연수마비 의심 시 NPO + 기관내 삽관 고려"
+      },
+      "lvo_detection_scales": {
+        "description": "LVO 가능성이 높은 환자를 현장에서 신속히 선별하는 도구 — EVT 경로 안내",
+        "scales": [
+          {
+            "name": "RACE (Rapid Arterial Occlusion Evaluation)",
+            "cutoff": "≥ 5점 → LVO 가능성 높음"
+          },
+          {
+            "name": "FAST-ED (Field Assessment Stroke Triage for Emergency Destination)",
+            "cutoff": "≥ 4점 → LVO 가능성 높음"
+          }
+        ]
       }
     },
-
     {
       "id": "S5",
       "phase": "응급 영상 검사 (Emergency Neuroimaging)",
-      "title": "뇌 CT / CTA / CTP",
+      "title": "뇌 CT / CTA / CTP / MRI",
       "time_target": "Door-to-CT < 25분, 판독 < 45분",
-
+      "source": "대한뇌졸중학회 진료지침, AHA/ASA 2024",
       "imaging_protocol": [
         {
           "modality": "비조영 뇌 CT (NCCT)",
@@ -289,7 +557,7 @@
             "뇌내출혈(ICH) 또는 지주막하출혈(SAH) → 있으면 출혈성 경로",
             "ASPECTS 점수 (전순환): 0–10점. ≤6점 → 광범위 초기 경색 → EVT 위험-이득 재평가",
             "조기 허혈성 변화 (EIC): 회백질 경계 소실, 렌즈핵 불명확, 피질 sulci 소실",
-            "Hyperdense MCA sign",
+            "Hyperdense MCA sign — MCA 혈전의 직접 징후",
             "저음영 병변이 뇌반구 1/3 이상인 다엽경색 (multilobar infarction) → tPA 금기"
           ]
         },
@@ -298,11 +566,12 @@
           "timing": "NCCT와 동시 또는 즉시 후",
           "purpose": "대혈관폐색 (LVO) 확인 → EVT 적응증 판단",
           "target_vessels": [
-            "내경동맥 (ICA)",
-            "중뇌동맥 M1, M2",
+            "내경동맥 (ICA) — 두개내·두개외",
+            "중뇌동맥 M1, M2 (가장 흔한 LVO 부위)",
             "전대뇌동맥 (ACA)",
             "뇌기저동맥 (BA), 추골동맥 (VA)",
-            "후대뇌동맥 P1"
+            "후대뇌동맥 P1",
+            "경동맥 협착 정도 평가 (이차 예방 계획에 활용)"
           ]
         },
         {
@@ -310,7 +579,7 @@
           "timing": "선택적 — 확장 시간창 또는 시간 불명 시",
           "purpose": "경색핵 (Infarct core) vs 허혈 반음영 (Penumbra) 불일치 평가",
           "indications": [
-            "발병 6–24시간 (전순환 LVO)",
+            "발병 6–24시간 (전순환 LVO): DAWN/DEFUSE-3 기준 평가 목적",
             "Wake-up stroke (시간 불명)",
             "후순환 6시간 이후 EVT 고려 시"
           ],
@@ -318,16 +587,56 @@
             "perfusion_core_ratio": "Penumbra / Core ≥ 1.8",
             "penumbra_volume": "> 15 mL",
             "core_volume": "< 70 mL"
+          },
+          "dawn_criteria": {
+            "description": "DAWN trial 기준 (6–24시간 창 EVT)",
+            "groups": [
+              {
+                "group": "A",
+                "age": "≥ 80세",
+                "nihss": "≥ 10",
+                "core": "< 21 mL"
+              },
+              {
+                "group": "B",
+                "age": "< 80세",
+                "nihss": "≥ 10",
+                "core": "< 31 mL"
+              },
+              {
+                "group": "C",
+                "age": "< 80세",
+                "nihss": "≥ 20",
+                "core": "31–51 mL"
+              }
+            ]
           }
         },
         {
-          "modality": "MRI (DWI + FLAIR + T2*)",
+          "modality": "MRI (DWI + FLAIR + T2* + MRA)",
           "timing": "CT 이후 또는 대체 (자원 가용 시)",
-          "purpose": "확진, 병변 범위, DWI-FLAIR mismatch (Wake-up stroke)",
+          "purpose": "확진, 병변 범위, DWI-FLAIR mismatch (Wake-up stroke), 미세 출혈",
+          "sequences": [
+            {
+              "name": "DWI (Diffusion Weighted Imaging)",
+              "role": "허혈성 경색 초기 변화에 가장 민감 — 수분 이내 양성화"
+            },
+            {
+              "name": "FLAIR (Fluid-Attenuated Inversion Recovery)",
+              "role": "DWI 이상 있으나 FLAIR 정상 → 발병 4.5시간 이내 가능성 → tPA/EVT 재고려 (DWI-FLAIR mismatch)"
+            },
+            {
+              "name": "T2* / SWI (Gradient Echo)",
+              "role": "미세 출혈(cerebral microbleed) 검출, 혈전 내 deoxyhemoglobin 확인"
+            },
+            {
+              "name": "MRA (MR Angiography)",
+              "role": "CTA 대체 — LVO·경동맥 협착·동맥 박리 평가"
+            }
+          ],
           "mri_flair_mismatch": "DWI 이상 있으나 FLAIR 정상 → 발병 4.5시간 이내 가능성 → tPA/EVT 재고려"
         }
       ],
-
       "after_ncct_branch": {
         "hemorrhage_present": {
           "action": "출혈성 뇌졸중 경로",
@@ -337,7 +646,7 @@
             "와파린 관련 ICH: 와파린 즉시 중단 + 비타민K IV + FFP 또는 프로트롬빈 복합제 농축액",
             "헤파린 관련 ICH: 프로타민(protamine sulfate) 투여",
             "NOAC 관련 ICH: 해당 역전제 투여",
-            "ICH 혈압: SBP ≥ 220 → 강압; 발병 6시간 이내 SBP 150–220 → SBP 140 mmHg까지 강하 고려 (단, 신기능 악화 위험 주의)",
+            "ICH 혈압: SBP ≥ 220 → 강압; 발병 6시간 이내 SBP 150–220 → SBP 140 mmHg까지 강하 고려",
             "소뇌출혈 최대직경 ≥ 3 cm 또는 뇌간 압박/수두증 → 개두술",
             "악성 MCA 경색 감압수술 기준 평가"
           ]
@@ -345,46 +654,226 @@
         "hemorrhage_absent": {
           "action": "허혈성 뇌졸중 경로 → S6 진행"
         }
+      },
+      "inpatient_follow_up_imaging": {
+        "description": "입원 후 원인 분류(TOAST) 및 이차 예방을 위한 추가 영상",
+        "modalities": [
+          {
+            "name": "뇌 MRI (전체 시퀀스 — DWI·FLAIR·T2*·MRA)",
+            "purpose": "확진 및 병변 분류, 미세 출혈 동반 여부 확인"
+          },
+          {
+            "name": "심초음파 (TTE 또는 TEE)",
+            "purpose": "좌심방·심실 혈전, 판막 이상, EF, PFO, 심내막염 확인",
+            "note": "TEE: TTE보다 좌심방·판막 세부 평가에 우월"
+          },
+          {
+            "name": "경동맥 초음파 (Carotid Duplex)",
+            "purpose": "경동맥 협착 정도·죽상경화반 구조 평가 (ulcerated heterogeneous plaque → 색전 고위험)"
+          },
+          {
+            "name": "경두개 도플러 (TCD)",
+            "purpose": "두개내 혈관 협착, 색전 신호(HITS) 탐지, PFO 검사 (bubble study)"
+          },
+          {
+            "name": "심장 CT / 핵의학 (선택적)",
+            "purpose": "관상동맥 질환 선별 (허혈성 뇌졸중 환자는 CAD 동반 위험 높음)"
+          }
+        ]
       }
     },
-
     {
       "id": "S6",
       "phase": "응급 혈액 검사 (Laboratory Tests)",
       "title": "응급 혈액 검사 — 영상과 동시 진행",
       "time_target": "영상 촬영과 동시 채혈",
       "key_principle": "검사 결과를 기다리느라 tPA 투여를 지연하지 말 것. 항응고제 복용 의심 없으면 PT/INR 결과 전에도 tPA 시작 가능.",
-
+      "source": "대한뇌졸중학회 진료지침, AHA/ASA 2024, Queen Square Textbook 3e",
       "essential_tests": [
-        { "test": "혈당 (Fingerstick glucose)", "threshold": "< 50 또는 > 400 mg/dL → tPA 금기 (교정 후 재평가)" },
-        { "test": "CBC (전혈구계산)", "threshold": "혈소판 < 100,000/mm³ → tPA 금기" },
-        { "test": "PT/INR", "threshold": "INR > 1.7 → tPA 금기" },
-        { "test": "aPTT", "threshold": "48시간 이내 헤파린 사용 + aPTT 연장 → tPA 금기" },
-        { "test": "BMP (전해질, Cr, BUN, eGFR)", "threshold": "신기능: NOAC 용량 조절 기준; 전해질 이상 감별" },
-        { "test": "Troponin (심근효소)", "threshold": "심근경색 동반 여부" }
+        {
+          "test": "혈당 (Fingerstick glucose)",
+          "threshold": "< 50 또는 > 400 mg/dL → tPA 금기 (교정 후 재평가)",
+          "note": "가장 먼저 확인. 저혈당 교정 후 증상 소실 시 stroke mimic 배제"
+        },
+        {
+          "test": "CBC (전혈구계산)",
+          "threshold": "혈소판 < 100,000/mm³ → tPA 금기",
+          "note": "적혈구 증가증·혈소판 증가증도 확인 (JAK2 양성 골수증식질환 가능)"
+        },
+        {
+          "test": "PT/INR",
+          "threshold": "INR > 1.7 → tPA 금기",
+          "note": "와파린 복용력 없으면 결과 전 tPA 투여 가능"
+        },
+        {
+          "test": "aPTT",
+          "threshold": "48시간 이내 헤파린 사용 + aPTT 연장 → tPA 금기"
+        },
+        {
+          "test": "BMP (전해질, Cr, BUN, eGFR)",
+          "threshold": "신기능: NOAC 용량 조절 기준; 전해질 이상 감별",
+          "note": "저나트륨혈증 등 전해질 이상은 stroke mimic 원인"
+        },
+        {
+          "test": "Troponin (심근효소)",
+          "threshold": "심근경색 동반 여부",
+          "note": "심인성 뇌졸중 평가와 연계; 급성 심근경색이 뇌졸중의 원인일 수 있음"
+        },
+        {
+          "test": "12-lead ECG",
+          "threshold": "심방세동, 급성 심근경색 확인",
+          "note": "모든 뇌졸중 환자에서 시행 (권고수준 B); 지속 심전도 모니터링 시작"
+        }
       ],
       "additional_tests": [
-        { "test": "β-hCG", "indication": "임신 가능 여성" },
-        { "test": "anti-Xa level", "indication": "LMWH 또는 Factor Xa 억제 NOAC 복용 의심" },
-        { "test": "LFT", "indication": "간질환 또는 와파린 복용 시" },
-        { "test": "독성 검사", "indication": "약물 남용 의심" }
-      ]
+        {
+          "test": "β-hCG",
+          "indication": "임신 가능 여성 — 상대적 금기 여부 확인",
+          "priority": "선택적"
+        },
+        {
+          "test": "Anti-Xa level",
+          "indication": "LMWH 또는 Factor Xa 억제 NOAC(리바록사반, 아픽사반) 복용 의심",
+          "priority": "선택적"
+        },
+        {
+          "test": "LFT (간기능 검사)",
+          "indication": "간질환 또는 와파린 복용 환자",
+          "priority": "선택적"
+        },
+        {
+          "test": "독성/약물 스크리닝",
+          "indication": "약물 남용 의심 (코카인, 암페타민 등) — 젊은 환자, 설명 안 되는 뇌졸중",
+          "priority": "선택적"
+        },
+        {
+          "test": "단순 흉부 방사선 (CXR)",
+          "indication": "심비대·흡인성 폐렴 확인; 선택적 시행 (권고수준 C)",
+          "priority": "선택적"
+        },
+        {
+          "test": "CSF (뇌척수액) 검사",
+          "indication": "SAH 의심이나 CT에서 출혈 확인 불가 시 (xanthochromia 확인)",
+          "priority": "선택적"
+        },
+        {
+          "test": "EEG (뇌파 검사)",
+          "indication": "경련이 초기 증상 또는 합병증으로 의심되는 경우 (권고수준 B)",
+          "priority": "선택적"
+        }
+      ],
+      "inpatient_workup_for_etiology": {
+        "description": "입원 후 TOAST 분류 및 이차 예방을 위한 추가 혈액 검사",
+        "tests": [
+          {
+            "test": "공복 혈당 + HbA1c",
+            "purpose": "당뇨 확인, 혈당 관리 목표 수립 (HbA1c < 7%)"
+          },
+          {
+            "test": "지질 검사 (LDL·HDL·TG·TC)",
+            "purpose": "LDL 목표: < 100 mg/dL (죽상경화성 원인 시 < 70 mg/dL); 고강도 스타틴 즉시 시작"
+          },
+          {
+            "test": "Holter 심전도 (24–48시간 이상)",
+            "purpose": "발작성 심방세동 탐지 — 발견 못하면 삽입형 루프 기록기(ILR) 고려"
+          },
+          {
+            "test": "과응고 상태 검사 (Thrombophilia screen)",
+            "indication": "Cryptogenic stroke 또는 젊은 환자",
+            "items": [
+              "단백 C·단백 S·항트롬빈 III",
+              "Factor V Leiden (활성화 단백C 저항성)",
+              "프로트롬빈 G20210A 변이",
+              "항인지질항체 (Lupus anticoagulant, Anticardiolipin, Anti-β2GPI)",
+              "호모시스테인 수치"
+            ],
+            "note": "정맥 혈전 위험인자는 동맥 뇌졸중에서 일상적 시행 불필요 (PFO 동반 시 역설적 색전 평가 목적으로 고려)"
+          },
+          {
+            "test": "항인지질항체 (APLS 확진)",
+            "indication": "뇌졸중 + 반복 혈전 + 유산 과거력",
+            "note": "12주 이상 간격으로 2회 이상 양성 확인 필요"
+          },
+          {
+            "test": "ESR·CRP·ANA·ANCA",
+            "indication": "혈관염·자가면역 질환 의심 시"
+          },
+          {
+            "test": "혈액 질환 검사",
+            "indication": "젊은 환자 또는 설명 안 되는 뇌졸중",
+            "items": [
+              "겸상 적혈구빈혈 (HbS)",
+              "JAK2 변이 (적혈구 증가증·혈소판 증가증)",
+              "혈전성 혈소판 감소성 자반증 (TTP)",
+              "발작성 야간 혈색소뇨증 (PNH)"
+            ]
+          }
+        ],
+        "toast_linked_workup": {
+          "description": "TOAST 분류별 핵심 검사 및 이차 예방 약물",
+          "classification": [
+            {
+              "type": "1. 심인성 색전 (Cardioembolic)",
+              "key_tests": [
+                "ECG·Holter·심초음파 (TTE/TEE)",
+                "심방세동 확인"
+              ],
+              "secondary_prevention": "NOAC (판막성 AF·기계판막 → 와파린); 발병 4–14일 내 시작"
+            },
+            {
+              "type": "2. 대혈관 죽상경화 (Large Artery Atherosclerosis)",
+              "key_tests": [
+                "CTA/MRA·경동맥 초음파",
+                "LDL 수치"
+              ],
+              "secondary_prevention": "항혈소판제 + 고강도 스타틴; 증상성 협착 ≥50% → CEA 고려"
+            },
+            {
+              "type": "3. 소혈관 폐색 (Small Vessel / Lacunar)",
+              "key_tests": [
+                "뇌 MRI (작은 피질하 병변 확인)"
+              ],
+              "secondary_prevention": "항혈소판제 (실로스타졸 단독 가능); SBP < 130 mmHg 목표"
+            },
+            {
+              "type": "4. 기타 확인된 원인 (Other Determined)",
+              "key_tests": [
+                "동맥 박리: MRA/CTA",
+                "APLS: 항인지질항체"
+              ],
+              "secondary_prevention": "원인별 특이적 치료"
+            },
+            {
+              "type": "5. 원인 불명 (Cryptogenic / ESUS)",
+              "key_tests": [
+                "장기 심전도(ILR)",
+                "과응고 상태 검사"
+              ],
+              "secondary_prevention": "항혈소판제 (ESUS에서 항응고제 일상적 사용 근거 불충분)"
+            }
+          ]
+        }
+      }
     },
-
     {
       "id": "S7",
       "phase": "치료 결정 (Treatment Decision)",
       "title": "시간창 확인 및 치료 경로 결정",
       "key_principle": "LKW 기준 경과 시간 + CT 결과 + NIHSS + 금기 여부 → tPA와 EVT는 독립적이며 병행 가능",
-
       "time_windows": [
         {
           "window": "≤ 3시간",
-          "options": ["IV tPA (권고수준 A)", "LVO 있으면 EVT 병행"]
+          "options": [
+            "IV tPA (권고수준 A)",
+            "LVO 있으면 EVT 병행"
+          ]
         },
         {
           "window": "3–4.5시간",
-          "options": ["IV tPA (권고수준 A)", "LVO 있으면 EVT 병행"],
+          "options": [
+            "IV tPA (권고수준 A)",
+            "LVO 있으면 EVT 병행"
+          ],
           "special_caution_for_3_to_4_5h": {
             "description": "다음 조건에서는 tPA 근거 부족 → 개별 위험-이득 판단 필요",
             "conditions": [
@@ -397,18 +886,27 @@
         },
         {
           "window": "4.5–6시간",
-          "options": ["IV tPA 금기", "LVO 확인 시 EVT (전순환, 권고수준 A)"]
+          "options": [
+            "IV tPA 금기",
+            "LVO 확인 시 EVT (전순환, 권고수준 A)"
+          ]
         },
         {
           "window": "6–24시간",
-          "options": ["IV tPA 금기", "LVO + DAWN/DEFUSE-3 기준 충족 시 EVT (권고수준 C)", "항혈소판제 + 지지 치료"]
+          "options": [
+            "IV tPA 금기",
+            "LVO + DAWN/DEFUSE-3 기준 충족 시 EVT (권고수준 C)",
+            "항혈소판제 + 지지 치료"
+          ]
         },
         {
           "window": "> 24시간 또는 시간 불명",
-          "options": ["MRI DWI-FLAIR mismatch 또는 CTP mismatch 확인 후 EVT 재고려", "기준 미충족 시 항혈소판제 + 지지 치료"]
+          "options": [
+            "MRI DWI-FLAIR mismatch 또는 CTP mismatch 확인 후 EVT 재고려",
+            "기준 미충족 시 항혈소판제 + 지지 치료"
+          ]
         }
       ],
-
       "iv_tpa": {
         "drug": "Alteplase (rt-PA)",
         "dosing": {
@@ -417,7 +915,6 @@
           "infusion": "나머지 90%를 60분간 지속 IV 주입"
         },
         "alternative": "Tenecteplase 0.25 mg/kg IV 단회 bolus (최대 25 mg) — 일부 기관 대안",
-
         "inclusion_criteria": [
           "신경학적 장애가 동반된 경미하지 않은 허혈성 뇌졸중 (NIHSS ≥4 또는 기능장애 유발)",
           "증상이 자발적으로 신속히 호전되지 않아야 함",
@@ -428,7 +925,6 @@
           "INR ≤ 1.7",
           "혈당 ≥ 50 mg/dL"
         ],
-
         "absolute_contraindications": [
           "CT에서 두개내 출혈",
           "최근 3개월 이내 두부 외상 또는 허혈성 뇌졸중",
@@ -449,7 +945,6 @@
           "대동맥 박리 의심",
           "거미막하출혈(SAH) 증상"
         ],
-
         "relative_contraindications": [
           "나이 ≥ 80세 + 3–4.5시간 창 (단독으로 절대 금기 아님; 3시간 이내는 가능)",
           "NIHSS > 25 + 3–4.5시간 창",
@@ -457,7 +952,6 @@
           "임신",
           "출혈을 유발할 수 있는 기저 질환"
         ],
-
         "bp_monitoring_after_tpa": {
           "schedule": {
             "during_infusion_and_first_2h": "매 15분 간격",
@@ -471,16 +965,13 @@
             "SBP_gte_230_or_DBP_gte_140": "Labetalol 10 mg IV 후 2–8 mg/분 지속 주입; 또는 Nicardipine 5 mg/시간 시작 후 5분마다 2.5 mg/시간 증량 (최대 15 mg/시간)"
           }
         },
-
         "nihss_monitoring_schedule": {
           "during_tpa": "매 15분",
           "next_6h": "매 30분",
           "next_16h": "매 1시간"
         },
-
         "time_target": "Door-to-Needle (DTN) < 60분 (목표 45분)"
       },
-
       "endovascular_therapy": {
         "name": "혈관내 재개통치료 (EVT / 기계적 혈전제거술)",
         "preferred_device": "Stent-retriever thrombectomy (1차 선택, 권고수준 A)",
@@ -488,7 +979,6 @@
           "흡인혈전제거술 (aspiration/suction thrombectomy) — 술자 판단",
           "혈관성형술 + 스텐트 (angioplasty/stenting) — 구제 치료"
         ],
-
         "indications_by_time": [
           {
             "window": "≤ 6시간 (전순환: ICA, M1, 큰 M2)",
@@ -510,21 +1000,23 @@
           },
           {
             "window": "≤ 6시간 (후순환: BA, P1, VA)",
-            "criteria": ["임상-영상 기준 충족 시"],
+            "criteria": [
+              "임상-영상 기준 충족 시"
+            ],
             "grade": "LOE III, GOR B"
           },
           {
             "window": "6시간 이후 (후순환)",
-            "criteria": ["유리한 영상 소견 시 위험-이득 개별 판단"],
+            "criteria": [
+              "유리한 영상 소견 시 위험-이득 개별 판단"
+            ],
             "grade": "LOE IV, GOR C"
           }
         ],
-
         "tpa_contraindicated_but_evt_ok": "tPA 금기 환자에서도 LVO 기준 충족 시 EVT 1차 치료로 권고 (LOE IIa, GOR B)",
         "anesthesia": "의식 진정(conscious sedation) 일반적으로 전신마취보다 선호 (LOE III, GOR B); 환자 상태·기관 경험 고려",
         "time_target": "Door-to-Groin Puncture < 90분"
       },
-
       "antiplatelet_therapy": {
         "indication": "tPA 및 EVT 모두 해당 없는 허혈성 뇌졸중 (비심인성)",
         "standard": {
@@ -543,12 +1035,10 @@
         }
       }
     },
-
     {
       "id": "S8",
       "phase": "입원 후 급성기 관리 (Acute Inpatient Care)",
       "title": "뇌졸중 집중치료실 (Stroke Unit) 입원 관리",
-
       "monitoring": [
         "지속 심전도 (최소 24–48시간, AF 탐색)",
         "NIHSS 반복 평가 (tPA 투여 시 위 프로토콜; 비투여 시 입원 초기 주기적)",
@@ -556,7 +1046,6 @@
         "혈당 모니터링 (목표 140–180 mg/dL)",
         "체온 (발열 시 즉시 교정; 흡인성 폐렴 먼저 확인)"
       ],
-
       "complication_prevention": [
         {
           "target": "심부정맥혈전증 (DVT) 예방",
@@ -577,14 +1066,20 @@
         },
         {
           "target": "욕창 예방",
-          "methods": ["조기 거동", "2시간마다 체위 변경", "공기 매트리스"]
+          "methods": [
+            "조기 거동",
+            "2시간마다 체위 변경",
+            "공기 매트리스"
+          ]
         },
         {
           "target": "비뇨기계 감염 예방",
-          "methods": ["유치 도뇨관 최소화 (필요 최단 기간만)", "예방적 항생제 불필요"]
+          "methods": [
+            "유치 도뇨관 최소화 (필요 최단 기간만)",
+            "예방적 항생제 불필요"
+          ]
         }
       ],
-
       "malignant_mca_infarction_decompressive_surgery": {
         "all_criteria_required": [
           "중뇌동맥 영역 뇌경색 임상 증상",
@@ -595,35 +1090,35 @@
         "age_criteria": "60세 이하 (LOE Ia, GOR A); 60세 초과도 적응 가능 (LOE Ib, GOR A)",
         "counseling": "수술 후 심각한 장애 동반 생존 가능성 충분히 설명 필요 (GPP)"
       },
-
       "seizure_management": {
         "prophylaxis": "경련 없었던 환자에 예방적 항경련제 일률 투여 불필요 (LOE IV, GOR C)",
         "treatment": "경련 발생 시 기타 신경계 질환 준하여 항경련제 투여"
       }
     },
-
     {
       "id": "S9",
       "phase": "원인 분류 및 이차 예방 (Etiology & Secondary Prevention)",
       "title": "TOAST 분류 + 위험인자 조절 + 이차 예방",
-
       "workup_during_admission": [
         "MRI (DWI, FLAIR, T2*, MRA) — 확진 및 병변 파악",
         "Holter 24–48시간 이상 — 심방세동 탐색 (발견 못하면 삽입형 루프 기록기 고려)",
-        "심초음파 (TTE 또는 TEE) — 좌심방·심실 혈전, 판막, EF 확인",
+        "심초음파 (TTE 또는 TEE) — 좌심방·심실 혈전, 판막, EF, PFO 확인",
         "경동맥 초음파 또는 CTA — 경동맥 협착",
         "공복혈당, HbA1c",
         "지질 검사 (LDL, HDL, TG, TC)"
       ],
-
       "toast_classification": [
         {
           "type": "1. 심인성 색전 (Cardioembolic)",
           "causes": [
-            "심방세동 (가장 흔함)", "좌심방·좌심실 혈전",
-            "류마티스 승모판·대동맥판 질환", "기계 판막 치환술 후",
-            "EF < 30% 울혈성 심부전", "확장심근병증",
-            "심내막염", "발작성 심방세동"
+            "심방세동 (가장 흔함)",
+            "좌심방·좌심실 혈전",
+            "류마티스 승모판·대동맥판 질환",
+            "기계 판막 치환술 후",
+            "EF < 30% 울혈성 심부전",
+            "확장심근병증",
+            "심내막염",
+            "발작성 심방세동"
           ],
           "secondary_prevention": {
             "drug": "항응고제 (NOAC 우선; 판막성 AF 또는 기계판막 → 와파린)",
@@ -633,7 +1128,10 @@
         },
         {
           "type": "2. 대혈관 죽상경화 (Large Artery Atherosclerosis)",
-          "causes": ["경동맥 협착 ≥ 50%", "두개내 주요 동맥 협착"],
+          "causes": [
+            "경동맥 협착 ≥ 50%",
+            "두개내 주요 동맥 협착"
+          ],
           "secondary_prevention": {
             "drug": "항혈소판제 + 고강도 스타틴",
             "carotid_stenosis_management": {
@@ -646,7 +1144,9 @@
         },
         {
           "type": "3. 소혈관 폐색 (Small Vessel / Lacunar)",
-          "causes": ["고혈압성 소혈관 병변 (lipohyalinosis)"],
+          "causes": [
+            "고혈압성 소혈관 병변 (lipohyalinosis)"
+          ],
           "secondary_prevention": {
             "drug": "항혈소판제 (실로스타졸 단독도 가능, LOE Ia GOR A)",
             "bp_target": "수축기 < 130 mmHg 고려 (LOE IIb, GOR B)"
@@ -654,7 +1154,12 @@
         },
         {
           "type": "4. 기타 확인된 원인 (Other Determined)",
-          "causes": ["동맥박리", "항인지질항체 증후군", "혈관염", "정맥성 뇌경색"],
+          "causes": [
+            "동맥박리",
+            "항인지질항체 증후군",
+            "혈관염",
+            "정맥성 뇌경색"
+          ],
           "secondary_prevention": "원인별 특이적 치료"
         },
         {
@@ -663,16 +1168,17 @@
           "secondary_prevention": "항혈소판제 (ESUS에서 항응고제 일상적 사용 근거 불충분)"
         }
       ],
-
       "statin_therapy": {
         "indication": "허혈성 뇌졸중 후 모든 환자 — 죽상경화성 원인 필수; 기타도 권고",
-        "drugs": ["Atorvastatin 40–80 mg 1일 1회", "Rosuvastatin 20–40 mg 1일 1회"],
+        "drugs": [
+          "Atorvastatin 40–80 mg 1일 1회",
+          "Rosuvastatin 20–40 mg 1일 1회"
+        ],
         "ldl_targets": {
           "standard": "< 100 mg/dL",
           "high_risk_atherosclerotic": "< 70 mg/dL (또는 기저치 대비 50% 이상 감소)"
         }
       },
-
       "risk_factor_control": [
         {
           "factor": "고혈압",
@@ -695,12 +1201,20 @@
             "with_CAD_or_atherosclerotic": "< 100 mg/dL (다발성 고위험군 더 적극적 치료 고려)"
           }
         },
-        { "factor": "흡연", "action": "즉시 금연 강력 권고; 간접흡연도 피할 것" },
-        { "factor": "과음", "action": "남성 하루 2잔 이하, 비임신 여성 하루 1잔 이하" },
-        { "factor": "비만/운동", "action": "매일 30분 이상 중등도 운동; 체중 감량" }
+        {
+          "factor": "흡연",
+          "action": "즉시 금연 강력 권고; 간접흡연도 피할 것"
+        },
+        {
+          "factor": "과음",
+          "action": "남성 하루 2잔 이하, 비임신 여성 하루 1잔 이하"
+        },
+        {
+          "factor": "비만/운동",
+          "action": "매일 30분 이상 중등도 운동; 체중 감량"
+        }
       ]
     },
-
     {
       "id": "S10",
       "phase": "재활 (Rehabilitation)",
@@ -716,7 +1230,6 @@
       "intensity": "적응 범위 내 충분한 재활; 훈련 기술은 일상생활에서 반복 사용"
     }
   ],
-
   "decision_summary": {
     "door_to_time_targets": {
       "assessment_and_stabilization": "< 10분",
@@ -751,6 +1264,49 @@
         "yes": "tPA 반응 기다리지 말고 EVT 동시 준비 (bridging)",
         "no": "tPA 단독 치료 후 이차 예방"
       }
-    ]
+    ],
+    "four_category_checklist": {
+      "description": "응급 평가 4대 카테고리 핵심 체크리스트 (v3.0 신규 추가)",
+      "history_taking": [
+        "LKW 또는 증상 발생 시각 (가장 중요)",
+        "증상 시작 양상 (갑작스러운 발생)",
+        "과거 뇌졸중/TIA 병력 (3개월 이내)",
+        "항응고제·항혈소판제 복용력",
+        "최근 수술·출혈·외상 병력",
+        "심방세동 등 심장 질환 병력",
+        "임신·경련 여부",
+        "Stroke mimic 감별 (저혈당·Todd's palsy 등)",
+        "원인 시사 단서: 경부 통증·발열·발살바 중 발생 (Queen Square)"
+      ],
+      "neurologic_exam": [
+        "ABC + 의식 수준 (GCS)",
+        "활력징후 (혈압·맥박·체온·SpO₂)",
+        "NIHSS 전 항목 평가 (10분 이내)",
+        "중증도 분류 및 치료 역치 확인",
+        "후순환 의심 시 HINTS 검사",
+        "비우성 반구 기능 평가 (무시·실행증)",
+        "연하 기능 평가 (경구 식이 전 필수)"
+      ],
+      "imaging": [
+        "NCCT (Door-to-CT < 25분) — 출혈 배제",
+        "ASPECTS 점수 평가",
+        "CTA (LVO 확인)",
+        "CTP (6–24h 또는 Wake-up stroke 시) + DAWN/DEFUSE-3 기준",
+        "MRI DWI-FLAIR mismatch 평가 (4개 시퀀스)",
+        "판독 완료 < 45분",
+        "입원 후: 심초음파·경동맥 초음파·TCD·뇌 MRI"
+      ],
+      "laboratory": [
+        "혈당 (fingerstick) — 즉시",
+        "CBC (혈소판 + 적혈구 증가증 확인)",
+        "PT/INR",
+        "aPTT",
+        "BMP (전해질·신기능)",
+        "Troponin",
+        "12-lead ECG",
+        "선택: β-hCG·Anti-Xa·CSF·EEG·독성 스크리닝",
+        "입원 후: Holter·지질·HbA1c·과응고 상태 검사·TOAST 연계 workup"
+      ]
+    }
   }
 }
