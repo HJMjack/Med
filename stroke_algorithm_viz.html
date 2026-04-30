@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>급성 허혈성 뇌졸중 알고리듬 v3.0</title>
+<style>
+:root {
+  --bg: #0d1117; --surface: #161b22; --surface2: #21262d; --border: #30363d;
+  --text: #e6edf3; --text-dim: #7d8590; --text-muted: #484f58;
+  --s1:#58a6ff; --s2:#3fb950; --s3:#d29922; --s4:#bc8cff;
+  --s5:#39d353; --s6:#56d364; --s7:#f85149; --s8:#db6d28; --s9:#58a6ff; --s10:#3fb950;
+  --radius:10px;
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+body { background:var(--bg); color:var(--text); font-family:'Segoe UI','Apple SD Gothic Neo',sans-serif; min-height:100vh; }
+
+/* HEADER */
+.hdr { background:linear-gradient(135deg,#1c2331,#0d1117); border-bottom:1px solid var(--border); padding:24px 32px; }
+.hdr h1 { font-size:22px; font-weight:700; letter-spacing:-0.3px; }
+.hdr p { color:var(--text-dim); font-size:13px; margin-top:4px; }
+.hdr-meta { display:flex; gap:12px; margin-top:14px; flex-wrap:wrap; }
+.badge { background:var(--surface2); border:1px solid var(--border); border-radius:20px; padding:4px 12px; font-size:12px; color:var(--text-dim); }
+.badge span { color:var(--text); font-weight:600; }
+
+/* TIME TARGETS */
+.time-bar { display:flex; gap:0; border-bottom:1px solid var(--border); background:var(--surface); overflow-x:auto; }
+.time-item { padding:10px 20px; text-align:center; border-right:1px solid var(--border); white-space:nowrap; flex:1; }
+.time-item .t-label { font-size:11px; color:var(--text-dim); }
+.time-item .t-val { font-size:15px; font-weight:700; margin-top:2px; color:#f85149; }
+
+/* LAYOUT */
+.layout { display:grid; grid-template-columns:1fr 340px; gap:0; min-height:calc(100vh - 120px); }
+.flow-col { padding:24px 20px; border-right:1px solid var(--border); overflow-y:auto; }
+.side-col { padding:20px; overflow-y:auto; background:var(--surface); }
+
+/* STEP CARDS */
+.step-wrap { display:flex; flex-direction:column; align-items:stretch; }
+.step-connector { width:2px; height:20px; background:var(--border); margin:0 auto; }
+.step-card {
+  border:1px solid var(--border); border-radius:var(--radius);
+  background:var(--surface); overflow:hidden; cursor:pointer;
+  transition:border-color 0.2s, box-shadow 0.2s;
+}
+.step-card:hover { box-shadow:0 0 0 1px var(--accent,#58a6ff); }
+.step-card.open { border-color:var(--accent,#58a6ff); }
+.step-header {
+  display:flex; align-items:center; gap:14px; padding:14px 16px;
+}
+.step-id {
+  width:36px; height:36px; border-radius:8px; font-size:13px; font-weight:700;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  background:var(--clr,#58a6ff); color:#000;
+}
+.step-info { flex:1; }
+.step-info .phase { font-size:11px; color:var(--text-dim); }
+.step-info .title { font-size:14px; font-weight:600; margin-top:2px; }
+.step-info .time { font-size:11px; color:var(--clr,#58a6ff); margin-top:3px; }
+.step-toggle { color:var(--text-dim); font-size:16px; transition:transform 0.2s; }
+.step-card.open .step-toggle { transform:rotate(180deg); }
+.step-body { display:none; padding:0 16px 16px; border-top:1px solid var(--border); }
+.step-card.open .step-body { display:block; }
+
+/* BODY CONTENT */
+.section { margin-top:14px; }
+.section-title { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-dim); margin-bottom:8px; border-bottom:1px solid var(--border); padding-bottom:4px; }
+.tag-list { display:flex; flex-wrap:wrap; gap:5px; }
+.tag { background:var(--surface2); border:1px solid var(--border); border-radius:6px; padding:3px 9px; font-size:12px; color:var(--text); }
+.tag.red { border-color:#f85149; color:#f85149; }
+.tag.green { border-color:#3fb950; color:#3fb950; }
+.tag.yellow { border-color:#d29922; color:#d29922; }
+.tag.blue { border-color:#58a6ff; color:#58a6ff; }
+.tag.purple { border-color:#bc8cff; color:#bc8cff; }
+.info-row { display:flex; justify-content:space-between; align-items:baseline; padding:5px 0; border-bottom:1px solid var(--border); font-size:13px; }
+.info-row:last-child { border-bottom:none; }
+.info-row .k { color:var(--text-dim); font-size:12px; }
+.info-row .v { font-weight:500; text-align:right; max-width:60%; }
+.checklist { list-style:none; }
+.checklist li { padding:5px 0; font-size:13px; border-bottom:1px solid var(--border); display:flex; align-items:flex-start; gap:8px; }
+.checklist li:last-child { border-bottom:none; }
+.checklist li::before { content:'○'; color:var(--text-muted); flex-shrink:0; margin-top:1px; }
+.box { background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:10px 12px; font-size:13px; margin-top:8px; }
+.box.red { border-color:#f85149; }
+.box.green { border-color:#3fb950; }
+.box.yellow { border-color:#d29922; }
+.box.blue { border-color:#58a6ff; }
+.box .box-title { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:6px; }
+.box.red .box-title { color:#f85149; }
+.box.green .box-title { color:#3fb950; }
+.box.yellow .box-title { color:#d29922; }
+.box.blue .box-title { color:#58a6ff; }
+
+/* DECISION TREE */
+.side-title { font-size:13px; font-weight:700; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:14px; }
+.dtree { display:flex; flex-direction:column; gap:10px; }
+.dnode {
+  border:1px solid var(--border); border-radius:8px; padding:12px;
+  background:var(--surface2);
+}
+.dnode .dq { font-size:13px; font-weight:600; margin-bottom:8px; }
+.dnode .dstep { font-size:10px; font-weight:700; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:6px; }
+.drow { display:flex; gap:6px; margin-top:6px; }
+.dyes { flex:1; background:#0d2818; border:1px solid #3fb950; border-radius:6px; padding:7px 10px; font-size:12px; color:#3fb950; }
+.dno  { flex:1; background:#200d0d; border:1px solid #f85149; border-radius:6px; padding:7px 10px; font-size:12px; color:#f85149; }
+.dyes::before { content:'Y → '; font-weight:700; }
+.dno::before  { content:'N → '; font-weight:700; }
+
+/* TOAST */
+.toast-item { border:1px solid var(--border); border-radius:8px; padding:10px 12px; margin-bottom:8px; background:var(--surface2); }
+.toast-type { font-size:12px; font-weight:700; color:#58a6ff; margin-bottom:6px; }
+.toast-drug { font-size:12px; color:var(--text); }
+.toast-drug span { color:#d29922; font-weight:600; }
+
+/* 4-CAT */
+.cat-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.cat-card { border-radius:8px; padding:12px; border:1px solid; }
+.cat-card.h { border-color:#d29922; background:#1a1600; }
+.cat-card.e { border-color:#bc8cff; background:#120d1a; }
+.cat-card.i { border-color:#39d353; background:#0d1a0e; }
+.cat-card.l { border-color:#58a6ff; background:#0d1220; }
+.cat-card .cat-title { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:8px; }
+.cat-card.h .cat-title { color:#d29922; }
+.cat-card.e .cat-title { color:#bc8cff; }
+.cat-card.i .cat-title { color:#39d353; }
+.cat-card.l .cat-title { color:#58a6ff; }
+.cat-card ul { list-style:none; }
+.cat-card ul li { font-size:11px; padding:2px 0; color:var(--text-dim); }
+.cat-card ul li::before { content:'· '; }
+
+/* NIHSS */
+.nihss-grid { display:grid; grid-template-columns:1fr 1fr; gap:4px; margin-top:8px; }
+.nihss-item { background:var(--surface2); border:1px solid var(--border); border-radius:5px; padding:5px 8px; font-size:11px; }
+.nihss-item .n-num { color:var(--text-dim); font-size:10px; }
+
+/* TIME WINDOW */
+.tw-list { display:flex; flex-direction:column; gap:6px; }
+.tw-item { border-radius:7px; padding:9px 12px; border:1px solid; font-size:12px; }
+.tw-item.green { background:#0d1a0e; border-color:#3fb950; }
+.tw-item.yellow { background:#1a1600; border-color:#d29922; }
+.tw-item.red { background:#1a0d0d; border-color:#f85149; }
+.tw-item .tw-window { font-weight:700; margin-bottom:4px; }
+.tw-item.green .tw-window { color:#3fb950; }
+.tw-item.yellow .tw-window { color:#d29922; }
+.tw-item.red .tw-window { color:#f85149; }
+.tw-item .tw-opts { color:var(--text-dim); }
+
+@media (max-width:900px) {
+  .layout { grid-template-columns:1fr; }
+  .side-col { border-top:1px solid var(--border); }
+  .cat-grid { grid-template-columns:1fr; }
+  .nihss-grid { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <h1>🧠 급성 허혈성 뇌졸중 응급 알고리듬</h1>
+  <p>대한뇌졸중학회 2024 · AHA/ASA 2024 · Queen Square Textbook of Neurology 3e</p>
+  <div class="hdr-meta">
+    <div class="badge">버전 <span>v3.0</span></div>
+    <div class="badge">스텝 <span>S1–S10</span></div>
+    <div class="badge">4대 카테고리 <span>History · Exam · Imaging · Labs</span></div>
+  </div>
+</div>
+
+<div class="time-bar">
+  <div class="time-item"><div class="t-label">평가·안정화</div><div class="t-val">&lt; 10분</div></div>
+  <div class="time-item"><div class="t-label">NIHSS 완료</div><div class="t-val">&lt; 15분</div></div>
+  <div class="time-item"><div class="t-label">CT 시작</div><div class="t-val">&lt; 25분</div></div>
+  <div class="time-item"><div class="t-label">CT 판독</div><div class="t-val">&lt; 45분</div></div>
+  <div class="time-item"><div class="t-label">Door-to-Needle</div><div class="t-val">&lt; 60분</div></div>
+  <div class="time-item"><div class="t-label">Door-to-Groin</div><div class="t-val">&lt; 90분</div></div>
+</div>
+
+<div class="layout">
+<!-- FLOW COLUMN -->
+<div class="flow-col">
+<div class="step-wrap" id="stepWrap"></div>
+</div>
+
+<!-- SIDE COLUMN -->
+<div class="side-col">
+
+  <div class="side-title">핵심 의사결정 트리</div>
+  <div class="dtree" id="dtree"></div>
+
+  <div style="margin-top:24px;" class="side-title">4대 카테고리 체크리스트</div>
+  <div class="cat-grid">
+    <div class="cat-card h">
+      <div class="cat-title">📋 History (S3)</div>
+      <ul>
+        <li>LKW 시간 (필수 #1)</li>
+        <li>증상 발생 양상</li>
+        <li>이전 뇌졸중/TIA</li>
+        <li>심장 병력 (AF)</li>
+        <li>항응고제·항혈소판제</li>
+        <li>tPA 금기 병력 확인</li>
+        <li>경련 여부</li>
+        <li>원인 단서 6가지</li>
+      </ul>
+    </div>
+    <div class="cat-card e">
+      <div class="cat-title">🔍 Exam (S4)</div>
+      <ul>
+        <li>NIHSS 15항목</li>
+        <li>혈압·맥박·산소포화도</li>
+        <li>HINTS exam</li>
+        <li>RACE / FAST-ED</li>
+        <li>소뇌 기능 검사</li>
+        <li>연하 스크리닝</li>
+        <li>무시·소거 평가</li>
+      </ul>
+    </div>
+    <div class="cat-card i">
+      <div class="cat-title">🖥 Imaging (S5)</div>
+      <ul>
+        <li>NCCT — 출혈 배제</li>
+        <li>CTA — LVO 확인</li>
+        <li>CTP/MRI — 시간 불명</li>
+        <li>DWI-FLAIR mismatch</li>
+        <li>심초음파 (입원)</li>
+        <li>경동맥 초음파 (입원)</li>
+        <li>장기 심전도 (입원)</li>
+      </ul>
+    </div>
+    <div class="cat-card l">
+      <div class="cat-title">🧪 Labs (S6)</div>
+      <ul>
+        <li>혈당 (가장 먼저)</li>
+        <li>CBC · PT/INR · aPTT</li>
+        <li>BMP · Troponin</li>
+        <li>12-lead ECG</li>
+        <li>공복혈당/HbA1c (입원)</li>
+        <li>지질 검사 (입원)</li>
+        <li>혈전성향 검사 (입원)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div style="margin-top:24px;" class="side-title">TOAST 분류 → 이차 예방</div>
+  <div id="toastList"></div>
+
+</div>
+</div>
+
+<script>
+const STEPS = [
+  {
+    id:'S1', clr:'#58a6ff', phase:'뇌졸중 의심 (Stroke Activation)', title:'증상 인식 — 뇌졸중 의심',
+    time:'증상 인식 즉시',
+    body: () => `
+      <div class="section">
+        <div class="section-title">주요 증상 (FAST/BE-FAST)</div>
+        <div class="tag-list">
+          <span class="tag blue">갑작스러운 편측 마비·무력감</span>
+          <span class="tag blue">실어증·구음 장애</span>
+          <span class="tag blue">편측 감각 이상</span>
+          <span class="tag blue">시야 장애·복시</span>
+          <span class="tag blue">균형 장애·어지럼</span>
+          <span class="tag blue">심한 두통</span>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-title">원내 선별 도구</div>
+        <div class="tag-list">
+          <span class="tag yellow">NIHSS (원내 표준)</span>
+          <span class="tag">CPSS (Cincinnati)</span>
+          <span class="tag">LAPSS</span>
+          <span class="tag">RACE scale</span>
+        </div>
+      </div>
+      <div class="box yellow"><div class="box-title">⚠ 후순환 주의</div>어지럼·보행 장애·복시·연하곤란만 있어도 뇌졸중 배제 불가. HINTS exam 필수.</div>
+    `
+  },
+  {
+    id:'S2', clr:'#3fb950', phase:'초기 안정화 (Initial Stabilization)', title:'ABC 안정화 + 즉각 처치',
+    time:'Door-to-Assessment < 10분',
+    body: () => `
+      <div class="section">
+        <div class="section-title">즉각 조치</div>
+        <ul class="checklist">
+          <li>기도 확보 (GCS ≤8 → 기관내삽관 고려)</li>
+          <li>SpO₂ &lt; 94% → 산소 투여</li>
+          <li>IV 라인 2개 확보 + 채혈</li>
+          <li>심전도 모니터 부착</li>
+          <li>Fingerstick 혈당 즉시 측정</li>
+          <li>저혈당(&lt;60 mg/dL) → 50% DW 50mL IV</li>
+          <li>뇌졸중 팀 즉시 호출 (Code Stroke)</li>
+        </ul>
+      </div>
+      <div class="section">
+        <div class="section-title">혈압 관리</div>
+        <div class="box red"><div class="box-title">tPA 투여 전</div>목표 ≤ 185/110 mmHg — 필요 시 Labetalol/Nicardipine 사용</div>
+        <div class="box"><div class="box-title">tPA 비적응증</div>≤ 220/120 mmHg 이하면 급격히 낮추지 않음 (뇌관류 유지)</div>
+      </div>
+    `
+  },
+  {
+    id:'S3', clr:'#d29922', phase:'핵심 병력 청취 (Critical History)', title:'Last Known Well + 병력',
+    time:'Door-to-History < 10분',
+    body: () => `
+      <div class="section">
+        <div class="box yellow"><div class="box-title">🔑 핵심 #1 — LKW 시간</div>
+        완전 정상이었음을 마지막으로 확인한 시각. Wake-up stroke → 취침 시각 = LKW. 보호자·목격자·119에게 확인.</div>
+      </div>
+      <div class="section">
+        <div class="section-title">tPA 금기 체크리스트</div>
+        <ul class="checklist">
+          <li>이전 뇌졸중/TIA 병력 (3개월 이내 → 금기)</li>
+          <li>두개내 출혈 과거력 / 뇌종양·AVM·동맥류</li>
+          <li>현재 항응고제 복용 (INR, NOAC 마지막 복용 시각)</li>
+          <li>최근 3개월 이내 심근경색</li>
+          <li>최근 14일 이내 주요 수술·외상</li>
+          <li>최근 21일 이내 소화기·비뇨기 출혈</li>
+          <li>최근 7일 이내 압박 불가 동맥 천자</li>
+          <li>임신 여부 / 경련 여부</li>
+        </ul>
+      </div>
+      <div class="section">
+        <div class="section-title">원인 단서 (etiology clue)</div>
+        <div class="tag-list">
+          <span class="tag purple">경부 통증 → 동맥 박리</span>
+          <span class="tag purple">발열+근육통 → 심내막염</span>
+          <span class="tag purple">Valsalva 중 발생 → PFO</span>
+          <span class="tag purple">젊은+설명 안됨 → APLS·혈관염</span>
+          <span class="tag purple">임신/피임약 → CVT</span>
+          <span class="tag purple">반복 유산 → APLS</span>
+        </div>
+      </div>
+    `
+  },
+  {
+    id:'S4', clr:'#bc8cff', phase:'신경학적 평가 (Neurological Assessment)', title:'NIHSS + 신경학적 검사',
+    time:'Door-to-NIHSS < 15분',
+    body: () => `
+      <div class="section">
+        <div class="section-title">NIHSS 15항목 (총 0–42점)</div>
+        <div class="nihss-grid">
+          ${[['1a','의식수준 LOC','0–3'],['1b','의식질문','0–2'],['1c','의식명령','0–2'],
+             ['2','주시 Gaze','0–2'],['3','시야','0–3'],['4','안면 마비','0–3'],
+             ['5a','우상지 운동','0–4'],['5b','좌상지 운동','0–4'],
+             ['6a','우하지 운동','0–4'],['6b','좌하지 운동','0–4'],
+             ['7','사지 조화','0–2'],['8','감각','0–2'],
+             ['9','언어·실어','0–3'],['10','구음 장애','0–2'],['11','소거·무시','0–2']
+          ].map(([n,name,r])=>`<div class="nihss-item"><div class="n-num">${n}</div>${name} <span style="color:var(--text-dim);float:right">${r}</span></div>`).join('')}
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-title">후순환 평가</div>
+        <div class="box blue"><div class="box-title">HINTS Exam</div>
+          Head Impulse (정상 → 중추성) · Nystagmus (방향변환 → 중추성) · Test of Skew (skew deviation → 중추성)
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-title">LVO 선별 척도</div>
+        <div class="tag-list">
+          <span class="tag red">RACE ≥ 5점 → LVO 의심</span>
+          <span class="tag red">FAST-ED ≥ 4점 → LVO 의심</span>
+        </div>
+      </div>
+      <div class="box"><div class="box-title">연하 스크리닝</div>3-oz water swallow test — 경구 투여 전 필수</div>
+    `
+  },
+  {
+    id:'S5', clr:'#39d353', phase:'응급 영상 검사 (Emergency Neuroimaging)', title:'CT / CTA / CTP / MRI',
+    time:'Door-to-CT < 25분 · 판독 < 45분',
+    body: () => `
+      <div class="section">
+        <div class="section-title">영상 프로토콜</div>
+        <div class="tw-list">
+          <div class="tw-item green"><div class="tw-window">① 비조영 CT (NCCT) — 모든 환자</div><div class="tw-opts">출혈 배제 · ASPECTS 평가</div></div>
+          <div class="tw-item green"><div class="tw-window">② CTA 두개내+두개외 — NCCT와 동시</div><div class="tw-opts">LVO 확인 · tPA와 병행 가능</div></div>
+          <div class="tw-item yellow"><div class="tw-window">③ CTP — 발생 4.5h 이상 또는 시간 불명</div><div class="tw-opts">Core vs Penumbra mismatch → DAWN/DEFUSE-3 기준 적용</div></div>
+          <div class="tw-item yellow"><div class="tw-window">④ MRI — 시간 불명 · Wake-up stroke</div><div class="tw-opts">DWI-FLAIR mismatch → LKW &lt; 4.5h 추정 가능</div></div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-title">MRI 시퀀스</div>
+        <div class="tag-list">
+          <span class="tag green">DWI — 급성 경색 확인</span>
+          <span class="tag green">FLAIR — 시간 추정</span>
+          <span class="tag green">T2*/GRE — 미세출혈(CMB)</span>
+          <span class="tag green">MRA — 혈관 폐색</span>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-title">입원 후 영상 추가</div>
+        <div class="tag-list">
+          <span class="tag">심초음파 (TTE/TEE)</span>
+          <span class="tag">경동맥 이중초음파</span>
+          <span class="tag">TCD (PFO 발포검사)</span>
+          <span class="tag">장기 심전도 모니터링</span>
+        </div>
+      </div>
+    `
+  },
+  {
+    id:'S6', clr:'#56d364', phase:'응급 혈액 검사 (Laboratory Tests)', title:'영상과 동시 채혈',
+    time:'영상 촬영과 동시 진행',
+    body: () => `
+      <div class="section">
+        <div class="section-title">응급 필수 검사</div>
+        <ul class="checklist">
+          <li><strong>혈당</strong> — 가장 먼저. &lt;50 또는 &gt;400 mg/dL → tPA 금기</li>
+          <li><strong>CBC</strong> — 혈소판 &lt;100,000 → tPA 금기. JAK2 양성 여부 확인</li>
+          <li><strong>PT/INR</strong> — &gt;1.7 → tPA 금기</li>
+          <li><strong>aPTT</strong> — 헤파린 효과 평가</li>
+          <li><strong>BMP</strong> — 전해질, Cr, BUN, eGFR</li>
+          <li><strong>Troponin</strong> — 심근경색·스트레스 심근병증 감별</li>
+          <li><strong>12-lead ECG</strong> — 심방세동·심근경색</li>
+        </ul>
+      </div>
+      <div class="section">
+        <div class="section-title">추가 고려 (임상 판단)</div>
+        <div class="tag-list">
+          <span class="tag">β-hCG (가임기 여성)</span>
+          <span class="tag">Anti-Xa (NOAC 복용)</span>
+          <span class="tag">LFT</span>
+          <span class="tag">독성·약물 스크리닝</span>
+          <span class="tag">CXR</span>
+          <span class="tag">CSF (SAH 의심)</span>
+          <span class="tag">EEG (경련 감별)</span>
+        </div>
+      </div>
+    `
+  },
+  {
+    id:'S7', clr:'#f85149', phase:'치료 결정 (Treatment Decision)', title:'시간창 확인 → tPA / EVT',
+    time:'DTN < 60분 · DTG < 90분',
+    body: () => `
+      <div class="section">
+        <div class="section-title">시간창별 치료 경로</div>
+        <div class="tw-list">
+          <div class="tw-item green"><div class="tw-window">≤ 3시간</div><div class="tw-opts">IV tPA (권고 A) · LVO → EVT 병행</div></div>
+          <div class="tw-item green"><div class="tw-window">3–4.5시간</div><div class="tw-opts">IV tPA (권고 A) · LVO → EVT 병행<br><span style="color:#f85149">주의: 나이≥80 · NIHSS>25 · 과거 뇌졸중+당뇨 · 항응고제 → 개별 판단</span></div></div>
+          <div class="tw-item yellow"><div class="tw-window">4.5–6시간</div><div class="tw-opts">tPA 금기 · LVO → EVT (전순환, 권고 A)</div></div>
+          <div class="tw-item red"><div class="tw-window">6–24시간</div><div class="tw-opts">tPA 금기 · LVO+DAWN/DEFUSE-3 기준 → EVT (권고 C)</div></div>
+          <div class="tw-item red"><div class="tw-window">&gt;24시간 또는 시간 불명</div><div class="tw-opts">CTP/MRI mismatch 확인 후 EVT 재고려 · 항혈소판+지지</div></div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-title">tPA 용량</div>
+        <div class="box red">
+          <div class="box-title">Alteplase 0.9 mg/kg (최대 90 mg)</div>
+          10% → 1분 IV bolus · 나머지 90% → 60분 지속 주입<br>
+          <span style="color:var(--text-dim);font-size:12px">대안: Tenecteplase 0.25 mg/kg 단회 bolus (최대 25 mg)</span>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-title">EVT 적응증 (기기: Stent Retriever 우선)</div>
+        <ul class="checklist">
+          <li>ICA, MCA M1/M2, ACA, PCA, BA, VA 폐색</li>
+          <li>ASPECTS ≥ 6 (또는 CTP penumbra 충분)</li>
+          <li>발병 전 mRS 0–1 (독립 일상 생활)</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    id:'S8', clr:'#db6d28', phase:'입원 후 급성기 관리 (Acute Inpatient Care)', title:'뇌졸중 집중치료실 관리',
+    time:'Stroke Unit 입원',
+    body: () => `
+      <div class="section">
+        <div class="section-title">모니터링</div>
+        <div class="tag-list">
+          <span class="tag">활력징후 지속 모니터링</span>
+          <span class="tag">심전도 모니터 24–72h</span>
+          <span class="tag">혈당 모니터 (140–180 mg/dL 유지)</span>
+          <span class="tag">체온 ≤ 37.5°C 유지</span>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-title">합병증 예방</div>
+        <ul class="checklist">
+          <li>흡인성 폐렴 — 연하 평가 후 경구 투여 결정</li>
+          <li>심부정맥 혈전증 — 조기 이동·압박 스타킹</li>
+          <li>뇨로감염 — 도뇨관 최소화</li>
+          <li>욕창 — 체위 변경 2시간마다</li>
+          <li>낙상 방지</li>
+        </ul>
+      </div>
+      <div class="section">
+        <div class="box red"><div class="box-title">악성 MCA 경색</div>발병 48시간 이내 뇌탈출 위험 → 감압성 반두개골절제술 (45세 이하 고려)</div>
+      </div>
+    `
+  },
+  {
+    id:'S9', clr:'#58a6ff', phase:'원인 분류 및 이차 예방', title:'TOAST 분류 + 위험인자 조절',
+    time:'입원 중 진행',
+    body: () => `
+      <div class="section">
+        <div class="section-title">스타틴 치료</div>
+        <div class="box blue"><div class="box-title">고강도 스타틴 (LDL &lt; 70 mg/dL 목표)</div>
+          죽상경화성 원인 → 즉시 시작<br>심인성 색전 → 이득 있음, 시작 권고
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-title">위험인자 조절</div>
+        <div class="tag-list">
+          <span class="tag blue">혈압 &lt; 130/80 mmHg</span>
+          <span class="tag blue">당뇨 HbA1c &lt; 7%</span>
+          <span class="tag blue">금연</span>
+          <span class="tag blue">심방세동 → 항응고</span>
+          <span class="tag blue">경동맥 협착 ≥70% → CEA/CAS</span>
+        </div>
+      </div>
+    `
+  },
+  {
+    id:'S10', clr:'#3fb950', phase:'재활 (Rehabilitation)', title:'조기 재활 시작',
+    time:'입원 24–48시간 내',
+    body: () => `
+      <div class="section">
+        <div class="section-title">재활 목표</div>
+        <div class="tag-list">
+          <span class="tag green">운동 재활 (물리치료)</span>
+          <span class="tag green">언어 치료 (실어증·구음 장애)</span>
+          <span class="tag green">작업 치료 (ADL 회복)</span>
+          <span class="tag green">연하 재활</span>
+          <span class="tag green">인지 재활</span>
+        </div>
+      </div>
+      <div class="section">
+        <div class="box green"><div class="box-title">조기 이동 (Early Mobilization)</div>
+        혈역학적으로 안정되면 24–48시간 내 침대 밖 이동 시작 → 폐렴·DVT·욕창 예방 + 기능 회복 촉진</div>
+      </div>
+    `
+  }
+];
+
+const DECISION_TREE = [
+  { step:1, q:'CT에서 출혈?', yes:'출혈성 경로 → 항응고 역전·신경외과', no:'허혈성 경로 → Step 2' },
+  { step:2, q:'LKW ≤ 4.5h + tPA 금기 없음?', yes:'IV tPA 즉시 (DTN < 60분)', no:'tPA 불가 → Step 3' },
+  { step:3, q:'CTA에서 LVO 확인?', yes:'EVT 팀 즉시 활성화 (≤ 24h)', no:'항혈소판 + 지지 치료' },
+  { step:4, q:'tPA 중 LVO 확인?', yes:'EVT 동시 준비 (Bridging)', no:'tPA 단독 후 이차 예방' },
+];
+
+const TOAST = [
+  { type:'심인성 색전', drug:'항응고제 (NOAC 우선 · 판막성 AF/기계판막 → 와파린)', color:'#58a6ff' },
+  { type:'대혈관 죽상경화', drug:'항혈소판제 + 고강도 스타틴 · 경동맥 협착 → CEA', color:'#d29922' },
+  { type:'소혈관 폐색 (열공)', drug:'항혈소판제 + 위험인자 조절', color:'#3fb950' },
+  { type:'기타 원인', drug:'원인별 맞춤 치료 (APLS→항응고, 박리→항응고/항혈소판)', color:'#bc8cff' },
+  { type:'원인 불명 (Cryptogenic)', drug:'항혈소판제 + PFO 평가·장기 심전도 모니터링', color:'#7d8590' },
+];
+
+// Render steps
+const wrap = document.getElementById('stepWrap');
+STEPS.forEach((s, idx) => {
+  if (idx > 0) {
+    const conn = document.createElement('div');
+    conn.className = 'step-connector';
+    wrap.appendChild(conn);
+  }
+  const card = document.createElement('div');
+  card.className = 'step-card';
+  card.style.setProperty('--accent', s.clr);
+  card.innerHTML = `
+    <div class="step-header" onclick="toggle(this.parentElement)">
+      <div class="step-id" style="background:${s.clr}">${s.id}</div>
+      <div class="step-info">
+        <div class="phase">${s.phase}</div>
+        <div class="title">${s.title}</div>
+        <div class="time">⏱ ${s.time}</div>
+      </div>
+      <div class="step-toggle">▾</div>
+    </div>
+    <div class="step-body">${s.body()}</div>
+  `;
+  wrap.appendChild(card);
+});
+
+function toggle(card) {
+  card.classList.toggle('open');
+}
+
+// Render decision tree
+const dtree = document.getElementById('dtree');
+DECISION_TREE.forEach(d => {
+  const node = document.createElement('div');
+  node.className = 'dnode';
+  node.innerHTML = `
+    <div class="dstep">Step ${d.step}</div>
+    <div class="dq">${d.q}</div>
+    <div class="drow">
+      <div class="dyes">${d.yes}</div>
+      <div class="dno">${d.no}</div>
+    </div>
+  `;
+  dtree.appendChild(node);
+});
+
+// Render TOAST
+const toastList = document.getElementById('toastList');
+TOAST.forEach(t => {
+  const el = document.createElement('div');
+  el.className = 'toast-item';
+  el.innerHTML = `<div class="toast-type" style="color:${t.color}">${t.type}</div><div class="toast-drug">💊 <span>${t.drug}</span></div>`;
+  toastList.appendChild(el);
+});
+
+// Auto-open S7 (treatment decision)
+document.querySelectorAll('.step-card')[6].classList.add('open');
+</script>
+</body>
+</html>
